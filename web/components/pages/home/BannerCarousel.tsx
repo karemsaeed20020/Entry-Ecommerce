@@ -81,7 +81,7 @@ const BannerCarousel = ({ banners }: BannerCarouselProps) => {
                 {/* Overlay Content */}
                 {/* <div className="absolute inset-0 bg-black/20" /> */}
 
-                <div className="absolute top-0 left-0 w-full h-full flex flex-col justify-center px-10 md:px-16 z-20">
+                <div className="absolute top-0 start-0 w-full h-full flex flex-col justify-center px-10 md:px-16 z-20">
                   <motion.div
                     variants={containerVariants}
                     initial="hidden"
@@ -120,7 +120,7 @@ const BannerCarousel = ({ banners }: BannerCarouselProps) => {
                           variants={itemVariants}
                           className="font-medium text-lg"
                         >
-                          Starting from{" "}
+                          Starting From{" "}
                           <span className="font-bold text-xl">
                             ${banner.startFrom}
                           </span>
@@ -144,7 +144,7 @@ const BannerCarousel = ({ banners }: BannerCarouselProps) => {
       </AnimatePresence>
 
       {/* Dots Navigation */}
-      <div className="absolute left-10 md:left-16 bottom-10 z-30 flex gap-3">
+      <div className="absolute start-10 md:start-16 bottom-10 z-30 flex gap-3">
         {banners.map((_, index) => (
           <button
             key={index}
