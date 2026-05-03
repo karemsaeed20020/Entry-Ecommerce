@@ -42,8 +42,8 @@ const CategorySidebar = ({ categories, className }: CategorySidebarProps) => {
                 {category.name}
               </p>
             </Link>
-            <span className="w-[2px] h-0 bg-primary absolute left-0 bottom-1/2 group-hover:h-[50%] transition-all duration-300" />
-            <span className="w-[2px] h-0 bg-primary absolute left-0 top-1/2 group-hover:h-[50%] transition-all duration-300" />
+            <span className="w-[2px] h-0 bg-primary absolute start-0 bottom-1/2 group-hover:h-[50%] transition-all duration-300" />
+            <span className="w-[2px] h-0 bg-primary absolute start-0 top-1/2 group-hover:h-[50%] transition-all duration-300" />
           </button>
         ))}
       </div>

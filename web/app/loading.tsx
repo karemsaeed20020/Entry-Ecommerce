@@ -1,70 +1,80 @@
-// import { Loader2 } from "lucide-react";
-
-// export default function Loading() {
-//   return (
-//     <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-background/80 backdrop-blur-sm min-h-screen w-full">
-//       <div className="flex flex-col items-center p-6 rounded-2xl bg-background/50 border border-border/50 shadow-sm gap-4 transition-all duration-300 animate-in fade-in zoom-in-95">
-//         <div className="relative flex items-center justify-center">
-//           <div className="absolute w-12 h-12 rounded-full border-4 border-primary/20 animate-pulse"></div>
-//           <Loader2 className="w-10 h-10 text-primary animate-spin" />
-//         </div>
-//         <div className="flex flex-col items-center gap-1">
-//           <h3 className="text-lg font-semibold tracking-tight text-foreground">
-//             Loading...
-//           </h3>
-//           <p className="text-sm text-muted-foreground animate-pulse">
-//             Getting things ready for you
-//           </p>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
 "use client";
 
 export default function Loading() {
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-background overflow-hidden">
 
-      {/* Background glow (kept but subtle) */}
-      <div className="absolute w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-3xl animate-pulse top-[-100px] left-[-100px]" />
-      <div className="absolute w-[400px] h-[400px] bg-purple-500/10 rounded-full blur-3xl animate-pulse bottom-[-100px] right-[-100px]" />
+      {/* Corner marks */}
+      <div className="absolute top-6 left-6 w-5 h-5 border-t-[1.5px] border-l-[1.5px] border-accent" />
+      <div className="absolute top-6 right-6 w-5 h-5 border-t-[1.5px] border-r-[1.5px] border-accent" />
+      <div className="absolute bottom-6 left-6 w-5 h-5 border-b-[1.5px] border-l-[1.5px] border-primary" />
+      <div className="absolute bottom-6 right-6 w-5 h-5 border-b-[1.5px] border-r-[1.5px] border-primary" />
+
+      {/* Background blobs */}
+      <div className="absolute w-[320px] h-[320px] rounded-full top-[-80px] left-[-80px] animate-pulse"
+        style={{ background: "rgba(213,34,69,0.06)" }} />
+      <div className="absolute w-[260px] h-[260px] rounded-full bottom-[-60px] right-[-60px] animate-pulse"
+        style={{ background: "rgba(26,26,44,0.05)", animationDelay: "1s" }} />
 
       {/* Content */}
-      <div className="relative flex flex-col items-center gap-6">
+      <div className="relative flex flex-col items-center gap-7">
 
-        {/* Loader ring */}
-        <div className="relative w-20 h-20">
-
-          <div className="absolute inset-0 rounded-full border border-muted" />
-
-          {/* solid color spinner (no gradient) */}
-          <div className="absolute inset-0 rounded-full border-2 border-transparent border-t-blue-500 animate-spin" />
-
-          {/* center dot */}
+        {/* Dual spinner */}
+        <div className="relative w-[88px] h-[88px]">
+          {/* track */}
+          <div className="absolute inset-0 rounded-full border-[1.5px] border-border" />
+          {/* outer spin — red */}
+          <div className="absolute inset-0 rounded-full border-[2.5px] border-transparent border-t-accent animate-spin"
+            style={{ animationDuration: "1.1s", animationTimingFunction: "cubic-bezier(0.5,0,0.5,1)" }} />
+          {/* inner spin — navy, reverse */}
+          <div className="absolute inset-[6px] rounded-full border-2 border-transparent border-b-primary animate-spin"
+            style={{ animationDuration: "1.8s", animationDirection: "reverse", animationTimingFunction: "cubic-bezier(0.5,0,0.5,1)" }} />
+          {/* center pulsing dot */}
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse" />
+            <div className="w-[22px] h-[22px] rounded-full flex items-center justify-center animate-pulse"
+              style={{ background: "#fbe9ec" }}>
+              <div className="w-[10px] h-[10px] rounded-full bg-accent" />
+            </div>
           </div>
-
         </div>
 
         {/* Text */}
-        <div className="text-center space-y-1">
-          <h2 className="text-xl font-semibold tracking-tight text-foreground">
-            Loading
+        <div className="text-center">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground mb-1">
+            Loading...
           </h2>
-
           <p className="text-sm text-muted-foreground">
-            Preparing something awesome...
+            Getting things ready for you
           </p>
         </div>
 
-        {/* solid progress bar (no gradient) */}
-        <div className="w-56 h-1 bg-muted rounded-full overflow-hidden">
-          <div className="h-full w-1/2 bg-blue-500 animate-pulse" />
+        {/* Sliding progress bar */}
+        <div className="w-[200px] h-[2px] bg-border rounded-full overflow-hidden">
+          <div className="h-full bg-accent rounded-full"
+            style={{ animation: "entry-progress 2s ease-in-out infinite" }} />
+        </div>
+
+        {/* Bouncing dots */}
+        <div className="flex gap-[6px] items-center">
+          {[0, 0.2, 0.4].map((delay, i) => (
+            <div key={i} className="w-[5px] h-[5px] rounded-full bg-accent"
+              style={{ animation: `entry-dot 1.2s ease-in-out infinite`, animationDelay: `${delay}s`, opacity: 0.3 }} />
+          ))}
         </div>
 
       </div>
+
+      <style>{`
+        @keyframes entry-progress {
+          0%   { width: 0%;  margin-left: 0%; }
+          50%  { width: 60%; margin-left: 20%; }
+          100% { width: 0%;  margin-left: 100%; }
+        }
+        @keyframes entry-dot {
+          0%,80%,100% { opacity: 0.3; transform: scale(1); }
+          40%          { opacity: 1;   transform: scale(1.4); }
+        }
+      `}</style>
     </div>
   );
 }

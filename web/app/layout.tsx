@@ -2,8 +2,6 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import NextTopLoader from 'nextjs-toploader';
 import { Toaster } from "@/components/ui/sonner";
-import GoogleTranslate from "@/components/common/GoogleTranslate";
-import LanguageSwitcher from "@/components/common/LanguageSwitcher";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -32,21 +30,19 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <GoogleTranslate />
        <NextTopLoader
-  color="#2563eb" // أزرق احترافي قريب من الموقع
-  initialPosition={0.03}
-  crawlSpeed={150}
-  height={3}
-  crawl={true}
-  showSpinner={false}
-  easing="ease-out"
-  speed={180}
-  shadow="0 0 8px #2563eb, 0 0 3px #2563eb"
-  zIndex={9999}
-/>
+          color="#2563eb"
+          initialPosition={0.03}
+          crawlSpeed={150}
+          height={3}
+          crawl={true}
+          showSpinner={false}
+          easing="ease-out"
+          speed={180}
+          shadow="0 0 8px #2563eb, 0 0 3px #2563eb"
+          zIndex={9999}
+        />
         {children}
-        <LanguageSwitcher />
         <Toaster position="bottom-right" richColors />
       </body>
     </html>
