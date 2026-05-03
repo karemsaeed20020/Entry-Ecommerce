@@ -13,25 +13,25 @@ import { toast } from "sonner";
 import HrLine from "../HrLine";
 
 const informationTab = [
-  { title: "About Us", href: "/about" },
-  { title: "Top Searches", href: "/search" },
-  { title: "Privacy Policy", href: "/privacy" },
-  { title: "Terms and Conditions", href: "/terms" },
-  { title: "Testimonials", href: "/testimonials" },
+  { label: "About Us", href: "/about" },
+  { label: "Top Searches", href: "/search" },
+  { label: "Privacy Policy", href: "/privacy" },
+  { label: "Terms & Conditions", href: "/terms" },
+  { label: "Testimonials", href: "/testimonials" },
 ];
 const CustomerTab = [
-  { title: "My Account", href: "/account" },
-  { title: "Track Order", href: "/track-order" },
-  { title: "Shop", href: "/shop" },
-  { title: "Wishlist", href: "/wishlist" },
-  { title: "Returns/Exchange", href: "/returns" },
+  { label: "My Account", href: "/account" },
+  { label: "Track Order", href: "/track-order" },
+  { label: "Shop", href: "/shop" },
+  { label: "Wishlist", href: "/wishlist" },
+  { label: "Returns", href: "/returns" },
 ];
 const OthersTab = [
-  { title: "Partnership Programs", href: "/programs" },
-  { title: "Associate Program", href: "/programs" },
-  { title: "Wholesale Socks", href: "/programs" },
-  { title: "Wholesale Funny Socks", href: "/programs" },
-  { title: "Others", href: "/others" },
+  { label: "Partnership", href: "/programs" },
+  { label: "Associate", href: "/programs" },
+  { label: "Wholesale Socks", href: "/programs" },
+  { label: "Wholesale Funny", href: "/programs" },
+  { label: "Others", href: "/others" },
 ];
 
 const Footer = () => {
@@ -41,7 +41,7 @@ const Footer = () => {
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) {
-      toast.error("Please enter a valid email address.");
+      toast.error("Please enter a valid email address");
       return;
     }
     
@@ -49,7 +49,7 @@ const Footer = () => {
     try {
       // Simulate network delay for UX
       await new Promise(resolve => setTimeout(resolve, 800));
-      toast.error("Newsletter Subscriptions are exclusive to the Premium setup.");
+      toast.error("Newsletter service is currently unavailable.");
       setEmail("");
     } finally {
       setIsSubmitting(false);
@@ -71,10 +71,10 @@ const Footer = () => {
               {informationTab?.map((item) => (
                 <Link
                   href={item?.href}
-                  key={item?.title}
+                  key={item?.label}
                   className="text-white/60 hover:text-white transition-colors duration-200"
                 >
-                  {item?.title}
+                  {item.label}
                 </Link>
               ))}
             </div>
@@ -85,10 +85,10 @@ const Footer = () => {
               {CustomerTab?.map((item) => (
                 <Link
                   href={item?.href}
-                  key={item?.title}
+                  key={item?.label}
                   className="text-white/60 hover:text-white transition-colors duration-200"
                 >
-                  {item?.title}
+                  {item.label}
                 </Link>
               ))}
             </div>
@@ -99,10 +99,10 @@ const Footer = () => {
               {OthersTab?.map((item) => (
                 <Link
                   href={item?.href}
-                  key={item?.title}
+                  key={item?.label}
                   className="text-white/60 hover:text-white transition-colors duration-200"
                 >
-                  {item?.title}
+                  {item.label}
                 </Link>
               ))}
             </div>

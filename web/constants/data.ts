@@ -8,13 +8,13 @@ const topHelpCenter = [
 ];
 
 export const bottomHeaderNavList = [
-  { title: "Home", href: "/" },
-  { title: "Shop", href: "/shop" },
-  { title: "Features", href: "/features" },
-  { title: "New Arrivals", href: "/new-arrivals" },
-  { title: "Blogs", href: "/blogs" },
-  { title: "About Us", href: "/about" },
-  { title: "Contact Us", href: "/contact" },
+  { title: "Home", key: "home", href: "/" },
+  { title: "Shop", key: "shop", href: "/shop" },
+  { title: "Features", key: "features", href: "/features" },
+  { title: "New Arrivals", key: "newArrivals", href: "/new-arrivals" },
+  { title: "Blogs", key: "blogs", href: "/blogs" },
+  { title: "About Us", key: "aboutUs", href: "/about" },
+  { title: "Contact Us", key: "contactUs", href: "/contact" },
 ];
 
 const footerTopData = [

@@ -25,6 +25,7 @@ interface ProductQuery extends PaginationQuery {
   excludeProductType?: string;
   seller?: string;
   approvalStatus?: string;
+  rating?: string;
 }
 
 interface ProductBody {
@@ -74,6 +75,7 @@ const getProducts: RequestHandler = asyncHandler(
       excludeProductType,
       seller,
       approvalStatus,
+      rating,
     } = req.query;
 
     // Use perPage if provided, otherwise use limit, default to 10
@@ -154,6 +156,10 @@ const getProducts: RequestHandler = asyncHandler(
 
     if (search) {
       query.name = { $regex: search, $options: "i" }; // Case-insensitive search
+    }
+
+    if (rating) {
+      query.averageRating = { $gte: Number(rating) };
     }
 
     // Pagination
