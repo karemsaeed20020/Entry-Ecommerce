@@ -158,7 +158,7 @@ const getProducts: RequestHandler = asyncHandler(
       query.name = { $regex: search, $options: "i" }; // Case-insensitive search
     }
 
-    if (rating) {
+    if (rating && !isNaN(Number(rating))) {
       query.averageRating = { $gte: Number(rating) };
     }
 
