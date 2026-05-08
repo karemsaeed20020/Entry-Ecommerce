@@ -12,6 +12,7 @@ import {
   Settings,
   ChevronRight,
   LogOut,
+  Store,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Container from "@/components/common/Container";

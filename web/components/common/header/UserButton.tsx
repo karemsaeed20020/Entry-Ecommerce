@@ -10,6 +10,7 @@ import {
   Package,
   Bell,
   Store,
+  MessageSquare,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -36,27 +37,14 @@ const UserButton = () => {
 
   const checkSellerStatus = async () => {
     try {
-      const token = localStorage.getItem("token");
-      if (!token) return;
-
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/sellers/me`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
-
-      if (response.ok) {
-        const data = await response.json();
-        if (data.isSeller && data.seller) {
-          setIsSeller(true);
-          setSellerStatus(data.seller.status);
-        }
+      const { fetchWithConfig } = await import("../../../lib/config");
+      const data = await fetchWithConfig<any>("/sellers/me");
+      if (data.isSeller && data.data) {
+        setIsSeller(true);
+        setSellerStatus(data.data.status);
       }
     } catch (error) {
-      console.error("Failed to check seller status:", error);
+      // Silently fail - user may not be a seller
     }
   };
 
@@ -102,9 +90,9 @@ const UserButton = () => {
           onMouseEnter={() => setOpen(true)}
           onMouseLeave={(e) => {
             // Check if mouse is moving to the popover content
-            const relatedTarget = e.relatedTarget as HTMLElement;
+            const relatedTarget = e.relatedTarget;
             if (
-              !relatedTarget ||
+              !(relatedTarget instanceof Element) ||
               !relatedTarget.closest('[data-slot="popover-content"]')
             ) {
               setOpen(false);
@@ -164,14 +152,30 @@ const UserButton = () => {
               <span>My Profile</span>
             </Link>
 
-            {/* Seller Dashboard Link - Visible to all for upsell */}
+            {/* Seller Link - Dynamic based on seller status */}
             <Link
-              href="/seller"
+              href={isSeller && sellerStatus === "approved" ? "/seller" : "/become-seller"}
               onClick={() => setOpen(false)}
               className="flex items-center gap-3 px-3 py-2 text-sm text-primary hover:bg-muted rounded-md transition-colors font-medium"
             >
               <Store className="w-4 h-4" />
-              <span>Vendor Dashboard</span>
+              <span>
+                {isSeller
+                  ? sellerStatus === "approved"
+                    ? "Seller Dashboard"
+                    : "Seller Status"
+                  : "Become a Seller"}
+              </span>
+              {isSeller && sellerStatus === "pending" && (
+                <span className="ml-auto text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-700">
+                  Pending
+                </span>
+              )}
+              {isSeller && sellerStatus === "approved" && (
+                <span className="ml-auto text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700">
+                  Active
+                </span>
+              )}
             </Link>
 
             <Link
@@ -181,6 +185,15 @@ const UserButton = () => {
             >
               <Package className="w-4 h-4" />
               <span>Orders</span>
+            </Link>
+            
+            <Link
+              href="/user/messages"
+              onClick={() => setOpen(false)}
+              className="flex items-center gap-3 px-3 py-2 text-sm text-primary hover:bg-muted rounded-md transition-colors"
+            >
+              <MessageSquare className="w-4 h-4" />
+              <span>Messages</span>
             </Link>
 
             <Link

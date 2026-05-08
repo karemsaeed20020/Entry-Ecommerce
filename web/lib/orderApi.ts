@@ -96,6 +96,11 @@ export interface Order {
     completed?: StatusUpdate;
     cancelled?: StatusUpdate;
   };
+  returnRequest?: {
+    _id: string;
+    status: string;
+    reason: string;
+  } | null;
 }
 
 export interface CreateOrderResponse {

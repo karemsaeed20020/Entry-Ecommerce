@@ -92,11 +92,9 @@ export async function fetchWithConfig<T>(
     
     if (cookieToken) {
       const bearerToken = `Bearer ${cookieToken}`;
-      // If no token was provided, or if the provided token is different from the cookie,
-      // use the cookie token.
-      if (!headers.Authorization || headers.Authorization !== bearerToken) {
-        headers.Authorization = bearerToken;
-      }
+      // ALWAYS use the cookie token on the client if it exists,
+      // as it's the source of truth updated by the refresh logic.
+      headers.Authorization = bearerToken;
     }
   }
 
@@ -120,6 +118,9 @@ export async function fetchWithConfig<T>(
   };
 
   try {
+    if (isClient) {
+      console.log(`[Fetch] ${method} ${url}`);
+    }
     const response = await fetch(url, mergedOptions);
 
     if (!response.ok) {
@@ -174,6 +175,14 @@ export async function fetchWithConfig<T>(
                 });
 
                 onTokenRefreshed(accessToken);
+                
+                // Update the Zustand store via custom event to avoid circular dependencies
+                if (isClient) {
+                  window.dispatchEvent(new CustomEvent("auth_token_refreshed", { 
+                    detail: { accessToken } 
+                  }));
+                }
+
                 isRefreshing = false;
 
                 // Retry original request with new token
@@ -195,17 +204,43 @@ export async function fetchWithConfig<T>(
             // If refresh failed or no token returned, clean up and redirect
             Cookies.remove("auth_token");
             Cookies.remove("refresh_token");
+            
+            // Also update the store if possible
+            try {
+              const { useUserStore } = require("./store");
+              useUserStore.getState().logoutUser();
+            } catch { /* ignore */ }
+
             isRefreshing = false;
             
-            // Redirect to login
-            const currentPath = window.location.pathname;
-            window.location.href = `/auth/signin?redirect=${encodeURIComponent(currentPath)}`;
+            // Redirect to login if on a protected page
+            if (isClient) {
+              const currentPath = window.location.pathname;
+              if (!currentPath.includes("/auth/")) {
+                window.dispatchEvent(new CustomEvent("auth_session_expired"));
+                window.location.href = `/auth/signin?redirect=${encodeURIComponent(currentPath)}`;
+              }
+            }
             throw new Error("Session expired. Please sign in again.");
 
           } catch (refreshError) {
             isRefreshing = false;
             throw refreshError;
           }
+        } else {
+          // No refresh token available, clean up and redirect
+          Cookies.remove("auth_token");
+          Cookies.remove("refresh_token");
+          
+          isRefreshing = false;
+          
+          if (isClient) {
+            const currentPath = window.location.pathname;
+            if (!currentPath.includes("/auth/")) {
+              window.location.href = `/auth/signin?redirect=${encodeURIComponent(currentPath)}`;
+            }
+          }
+          throw new Error("Session expired. Please sign in again.");
         }
       }
 

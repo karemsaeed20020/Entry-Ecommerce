@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import AdsSideBanner from "./AdsSideBanner";
 
@@ -155,6 +156,13 @@ const HomeAdvertisement = ({ bannerIds, images }: HomeAdvertisementProps) => {
                     href={banner.link}
                     className="block w-full h-full relative"
                   >
+                  <motion.div
+                    key={`img-${currentSlide}`}
+                    initial={{ scale: 1.1 }}
+                    animate={{ scale: 1 }}
+                    transition={{ duration: 5, ease: "easeOut" }}
+                    className="relative w-full h-full"
+                  >
                     <Image
                       src={banner.image}
                       alt={banner.name || `Advertisement ${index + 1}`}
@@ -164,17 +172,26 @@ const HomeAdvertisement = ({ bannerIds, images }: HomeAdvertisementProps) => {
                       priority={index === 0}
                       unoptimized={banner.image.startsWith("data:")}
                     />
+                  </motion.div>
                   </Link>
                 ) : (
-                  <Image
-                    src={banner.image}
-                    alt={banner.name || `Advertisement ${index + 1}`}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 768px) 100vw, 50vw"
-                    priority={index === 0}
-                    unoptimized={banner.image.startsWith("data:")}
-                  />
+                  <motion.div
+                    key={`img-no-link-${currentSlide}`}
+                    initial={{ scale: 1.1 }}
+                    animate={{ scale: 1 }}
+                    transition={{ duration: 5, ease: "easeOut" }}
+                    className="relative w-full h-full"
+                  >
+                    <Image
+                      src={banner.image}
+                      alt={banner.name || `Advertisement ${index + 1}`}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                      priority={index === 0}
+                      unoptimized={banner.image.startsWith("data:")}
+                    />
+                  </motion.div>
                 )}
               </div>
             </div>

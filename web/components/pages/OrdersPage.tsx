@@ -46,7 +46,8 @@ import {
 import { OrderTableSkeleton } from "../skeleton/OrderSkeleton";
 import PaymentGatewayDialog from "../shared/PaymentGatewayDialog";
 import { generateInvoicePDF, type InvoiceData } from "@/lib/invoiceGenerator";
-import { Download } from "lucide-react";
+import { Download, RotateCcw } from "lucide-react";
+import ReturnRequestDialog from "../shared/ReturnRequestDialog";
 
 /* ── helpers ── */
 const STATUS_CONFIG: Record<
@@ -208,6 +209,8 @@ const OrdersPageContent = () => {
   >(null);
   const [activeTab, setActiveTab] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [returnOrder, setReturnOrder] = useState<Order | null>(null);
+  const [showReturnDialog, setShowReturnDialog] = useState(false);
 
   const success = searchParams.get("success");
   const orderId = searchParams.get("orderId");
@@ -647,13 +650,25 @@ const OrdersPageContent = () => {
                           )}
                         </TableCell>
                         <TableCell>
-                          <Badge
-                            variant="outline"
-                            className={`font-medium border-0 gap-1.5 pl-2 ${status.bg} ${status.text}`}
-                          >
-                            {status.icon}
-                            {status.label}
-                          </Badge>
+                          <div className="flex flex-col gap-1.5">
+                            <Badge
+                              variant="outline"
+                              className={`font-medium border-0 gap-1.5 pl-2 ${status.bg} ${status.text}`}
+                            >
+                              {status.icon}
+                              {status.label}
+                            </Badge>
+
+                            {order.returnRequest && (
+                              <Badge
+                                variant="outline"
+                                className="font-medium border-orange-200 text-orange-700 bg-orange-50 gap-1.5 pl-2"
+                              >
+                                <RotateCcw className="w-3 h-3" />
+                                Return: {order.returnRequest.status.charAt(0).toUpperCase() + order.returnRequest.status.slice(1)}
+                              </Badge>
+                            )}
+                          </div>
                         </TableCell>
                         <TableCell className="text-right flex items-center justify-end gap-2">
                           <Button
@@ -665,6 +680,22 @@ const OrdersPageContent = () => {
                           >
                             <Download className="w-4 h-4" />
                           </Button>
+                          
+                          {(order.status === "delivered" || order.status === "completed") && !order.returnRequest && (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 text-muted-foreground hover:text-orange-500 transition-colors"
+                              onClick={() => {
+                                setReturnOrder(order);
+                                setShowReturnDialog(true);
+                              }}
+                              title="Request Return"
+                            >
+                              <RotateCcw className="w-4 h-4" />
+                            </Button>
+                          )}
+
                           <Link href={`/user/orders/${order._id}`}>
                             <Button
                               variant="ghost"
@@ -698,6 +729,18 @@ const OrdersPageContent = () => {
         onConfirm={processPayment}
         isProcessing={processingPayment}
       />
+
+      {returnOrder && (
+        <ReturnRequestDialog 
+          isOpen={showReturnDialog}
+          onClose={() => {
+            setShowReturnDialog(false);
+            setReturnOrder(null);
+          }}
+          orderId={returnOrder._id}
+          items={returnOrder.items}
+        />
+      )}
     </div>
   );
 };

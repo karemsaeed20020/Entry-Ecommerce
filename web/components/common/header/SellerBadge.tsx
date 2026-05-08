@@ -52,13 +52,17 @@ const SellerBadge = () => {
     }
   };
 
+  if (loading || !isSeller || sellerStatus !== "approved") {
+    return null;
+  }
+
   return (
     <Link href="/seller" className="relative group" title="Seller Dashboard">
-      <div className="relative flex items-center justify-center w-8 h-8 rounded-full bg-primary-foreground transition-all">
-        <Store className="h-5 w-5 text-primary" />
-        <span className="absolute -top-1 -right-1 flex h-3 w-3">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
-          <span className="relative inline-flex rounded-full h-3 w-3 bg-accent"></span>
+      <div className="relative flex items-center justify-center w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 transition-all border border-white/10">
+        <Store className="h-4 w-4 text-white" />
+        <span className="absolute -top-1 -right-1 flex h-2 w-2">
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#d52245] opacity-75"></span>
+          <span className="relative inline-flex rounded-full h-2 w-2 bg-[#d52245]"></span>
         </span>
       </div>
     </Link>

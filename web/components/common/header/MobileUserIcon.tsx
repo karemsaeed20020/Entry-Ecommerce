@@ -9,6 +9,7 @@ import {
   ShoppingBag,
   Settings,
   LogOut,
+  MessageSquare,
 } from "lucide-react";
 import { useAuthSidebarStore } from "@/lib/useAuthSidebarStore";
 import { useUserStore } from "@/lib/store";
@@ -108,6 +109,11 @@ const MobileUserIcon = () => {
                   label: "My Profile",
                 },
                 { href: "/user/orders", icon: Package, label: "Orders" },
+                {
+                  href: "/user/messages",
+                  icon: MessageSquare,
+                  label: "Messages",
+                },
                 { href: "/user/wishlist", icon: Heart, label: "Wishlist" },
                 {
                   href: "/shop",

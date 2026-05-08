@@ -133,6 +133,7 @@ export interface Review {
 export interface Product {
   _id: string;
   name: string;
+  barcode?: string;
   slug?: string;
   description: string;
   aboutItems?: string[];

@@ -35,9 +35,9 @@ const ProductRating = ({
               size={starSize}
               className={
                 isFilled
-                  ? "fill-primary text-primary"
+                  ? "fill-yellow-400 text-yellow-400"
                   : isHalfFilled
-                    ? "fill-primary/50 text-primary"
+                    ? "fill-yellow-400/50 text-yellow-400"
                     : "text-muted-foreground/30"
               }
               fill={isFilled || isHalfFilled ? "currentColor" : "none"}

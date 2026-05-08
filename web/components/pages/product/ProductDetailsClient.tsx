@@ -36,6 +36,7 @@ import { useCartStore, useUserStore } from "@/lib/store";
 import { Product } from "@/lib/types";
 import WishlistButton from "@/components/common/products/WishlistButton";
 import CompareButton from "@/components/common/CompareButton";
+import ChatWidget from "@/components/common/ChatWidget";
 
 interface ProductDetailsClientProps {
   product: Product;
@@ -54,6 +55,8 @@ const ProductDetailsClient: React.FC<ProductDetailsClientProps> = ({
   const [isBuyingNow, setIsBuyingNow] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [addedToCart, setAddedToCart] = useState(false);
+  const [chatOpen, setChatOpen] = useState(false);
+  const [triggerChat, setTriggerChat] = useState(0);
   
   // CRITICAL FIX: Add mounted state to prevent hydration mismatch
   const [mounted, setMounted] = useState(false);
@@ -108,7 +111,8 @@ const ProductDetailsClient: React.FC<ProductDetailsClientProps> = ({
   };
 
   const handleAskQuestion = () => {
-    router.push("/help");
+    if (!requireAuth()) return;
+    setTriggerChat(prev => prev + 1);
   };
 
   // Add to cart handler
@@ -412,13 +416,15 @@ const ProductDetailsClient: React.FC<ProductDetailsClientProps> = ({
         </Button>
 
         {/* Ask Question button */}
-        <button
-          onClick={handleAskQuestion}
-          className="flex items-center gap-2 px-4 h-10 rounded-lg border border-border text-sm font-medium text-foreground hover:bg-muted hover:border-primary/40 hover:text-primary transition-all duration-200"
-        >
-          <FileQuestion className="w-4 h-4" />
-          Ask Question
-        </button>
+        {(product?.vendor || (product as any)?.seller) && (
+          <button
+            onClick={handleAskQuestion}
+            className="flex items-center gap-2 px-4 h-10 rounded-lg border border-border text-sm font-medium text-foreground hover:bg-muted hover:border-primary/40 hover:text-primary transition-all duration-200"
+          >
+            <FileQuestion className="w-4 h-4" />
+            Ask Question
+          </button>
+        )}
 
         {/* Share button with popover */}
         <Popover open={shareOpen} onOpenChange={setShareOpen}>
@@ -487,6 +493,22 @@ const ProductDetailsClient: React.FC<ProductDetailsClientProps> = ({
           </PopoverContent>
         </Popover>
       </div>
+
+      {/* Real-time Chat with Seller */}
+      {(product?.vendor || (product as any)?.seller) && (
+        <ChatWidget 
+          sellerId={
+            (product.vendor as any)?.userId?._id || 
+            (product.vendor as any)?.userId || 
+            ((product as any).seller as any)?.userId?._id || 
+            ((product as any).seller as any)?.userId
+          }
+          sellerName={(product.vendor as any)?.storeName || ((product as any).seller as any)?.storeName}
+          sellerAvatar={(product.vendor as any)?.logo || ((product as any).seller as any)?.logo}
+          forceOpen={triggerChat > 0}
+          onToggle={setChatOpen}
+        />
+      )}
     </TooltipProvider>
   );
 };

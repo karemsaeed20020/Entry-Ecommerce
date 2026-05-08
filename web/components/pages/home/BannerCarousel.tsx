@@ -71,13 +71,20 @@ const BannerCarousel = ({ banners }: BannerCarouselProps) => {
                 transition={{ duration: 1 }}
                 className="absolute inset-0 w-full h-full"
               >
-                <Image
-                  src={banner.image}
-                  alt={banner.name}
-                  fill
-                  priority={index === 0}
-                  className="object-cover w-full h-full rounded-md"
-                />
+                <motion.div
+                  initial={{ scale: 1.1 }}
+                  animate={{ scale: 1 }}
+                  transition={{ duration: 5, ease: "easeOut" }}
+                  className="w-full h-full"
+                >
+                  <Image
+                    src={banner.image}
+                    alt={banner.name}
+                    fill
+                    priority={index === 0}
+                    className="object-cover w-full h-full rounded-md"
+                  />
+                </motion.div>
                 {/* Overlay Content */}
                 {/* <div className="absolute inset-0 bg-black/20" /> */}
 

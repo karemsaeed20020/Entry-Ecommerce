@@ -4,6 +4,7 @@ import { Bell } from "lucide-react";
 import Link from "next/link";
 import { useUserStore } from "@/lib/store";
 import notificationApi, { Notification } from "@/lib/notificationApi";
+import { io } from "socket.io-client";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -42,13 +43,29 @@ const NotificationIcon = () => {
   };
 
   useEffect(() => {
-    if (hasMounted && auth_token) {
+    if (hasMounted && auth_token && authUser) {
       fetchNotifications();
-      // Poll every 1 minute for simple "real-time" feel without WebSockets
-      const interval = setInterval(fetchNotifications, 60000);
-      return () => clearInterval(interval);
+      
+      // Initialize socket for real-time notifications
+      const socket = io(process.env.NEXT_PUBLIC_API_URL as string, {
+        withCredentials: true,
+      });
+
+      // Join personal room based on user ID
+      socket.emit("join_room", authUser._id);
+
+      socket.on("new_notification", (notification: Notification) => {
+        setNotifications(prev => [notification, ...prev].slice(0, 5));
+        setUnreadCount(prev => prev + 1);
+        
+        // Optional: Trigger a browser notification or sound
+      });
+
+      return () => {
+        socket.disconnect();
+      };
     }
-  }, [hasMounted, auth_token]);
+  }, [hasMounted, auth_token, authUser]);
 
   const handleMarkAsRead = async (id: string) => {
     try {
