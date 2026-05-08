@@ -13,11 +13,11 @@ const CategorySidebar = ({ categories, className }: CategorySidebarProps) => {
   return (
     <div
       className={cn(
-        "flex flex-col gap-1 w-72 bg-white min-w-[280px] border border-gray-100 shadow-xs h-[500px] rounded-bl-lg rounded-br-lg",
+        "flex flex-col gap-1 w-72 bg-white min-w-[280px] border border-gray-100 shadow-xs h-full min-h-[500px] overflow-hidden rounded-bl-lg rounded-br-lg",
         className,
       )}
     >
-      <div className="flex flex-col gap-1 overflow-y-auto pt-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <div className="flex flex-col gap-1 overflow-hidden pt-2">
         {categories?.map((category) => (
           <button key={category._id} className="group relative py-1.5 px-3">
             <Link

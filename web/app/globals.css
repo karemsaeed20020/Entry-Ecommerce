@@ -231,3 +231,37 @@ iframe.skiptranslate {
 body {
   top: 0 !important;
 }
+
+/* Global Custom Scrollbar - Modern Floating Pill Design */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(26, 26, 44, 0.5); /* Semi-transparent navy */
+  border: 4px solid transparent;
+  border-radius: 100px;
+  background-clip: padding-box;
+  transition: background-color 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(213, 34, 69, 0.8); /* Turns to accent red on hover */
+  border: 3px solid transparent;
+}
+
+/* For Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(26, 26, 44, 0.5) transparent;
+}
+
+/* For Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #1a1a2c #f1f1f1;
+}

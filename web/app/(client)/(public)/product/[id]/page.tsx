@@ -22,6 +22,7 @@ import ProductImageGallery from "@/components/pages/product/ProductImageGallery"
 import ProductDetailsClient from "@/components/pages/product/ProductDetailsClient";
 import ProductDescriptionClient from "@/components/pages/product/ProductDescriptionClient";
 import ProductReviews from "@/components/pages/product/ReviewForm";
+import BarcodeWrapper from "@/components/common/BarcodeWrapper";
 
 const ProductDetails = async ({
   params,
@@ -210,6 +211,22 @@ const ProductDetails = async ({
                   Guaranteed safe & secure checkout
                 </p>
               </div>
+
+              {/* Product Barcode */}
+              {product.barcode && (
+                <div className="bg-background p-4 rounded-xl border border-muted-foreground/20 flex flex-col items-center justify-center gap-2 shadow-sm">
+                  <div className="scale-75 sm:scale-90 md:scale-100 origin-center">
+                    <BarcodeWrapper 
+                      value={product.barcode} 
+                      width={1.5} 
+                      height={50} 
+                      fontSize={12}
+                      background="transparent"
+                    />
+                  </div>
+                  <span className="text-[10px] text-muted-foreground font-mono uppercase tracking-widest">Official Product Code</span>
+                </div>
+              )}
             </div>
           </div>
         </div>

@@ -567,10 +567,191 @@ const sendVerificationEmail = async (
   }
 };
 
+// Send abandoned cart recovery email
+const sendAbandonedCartEmail = async (
+  email: string,
+  userName: string,
+  cartLink: string,
+): Promise<EmailResult> => {
+  const transporter = createTransporter();
+
+  const htmlContent = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Did you forget something? - Entry Ecommerce</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f5f7fa; line-height: 1.6;">
+  
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f5f7fa; padding: 40px 20px;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);">
+          <tr>
+            <td style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); padding: 40px 30px; text-align: center;">
+              <div style="background-color: white; display: inline-block; padding: 15px 25px; border-radius: 8px; margin-bottom: 20px;">
+                <h1 style="margin: 0; color: #d97706; font-size: 28px; font-weight: 700;">Entry Ecommerce</h1>
+              </div>
+              <h2 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: 600;">🛒 You left something behind!</h2>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 40px 30px;">
+              <h3 style="margin: 0 0 15px 0; color: #1a1a1a; font-size: 20px; font-weight: 600;">Hi ${userName}! 👋</h3>
+              <p style="margin: 0 0 20px 0; color: #666; font-size: 15px; line-height: 1.6;">
+                We noticed you added some great items to your cart, but haven't completed your purchase yet.
+              </p>
+              <p style="margin: 0 0 20px 0; color: #666; font-size: 15px; line-height: 1.6;">
+                As a special thank you, use code <strong>COMEBACK5</strong> at checkout for an exclusive 5% discount on your order!
+              </p>
+              <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 30px;">
+                <tr>
+                  <td align="center">
+                    <a href="${cartLink}" style="display: inline-block; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: #ffffff; text-decoration: none; padding: 16px 40px; border-radius: 8px; font-weight: 600; font-size: 16px;">
+                      Return to My Cart
+                    </a>
+                  </td>
+                </tr>
+              </table>
+              <p style="margin: 0; color: #666; font-size: 14px;">
+                If you have any questions or need help, just reply to this email!
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td style="background-color: #f8f9fa; padding: 30px; text-align: center; border-top: 1px solid #e9ecef;">
+              <p style="margin: 0; color: #999; font-size: 12px;">
+                © ${new Date().getFullYear()} Entry Ecommerce. All rights reserved.
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+  `;
+
+  const mailOptions = {
+    from: `"Entry Ecommerce" <${process.env.SENDER_EMAIL_ADDRESS || "reactjsbd@gmail.com"}>`,
+    to: email,
+    subject: "Did you forget something? Complete your purchase! - Entry Ecommerce",
+    html: htmlContent,
+  };
+
+  try {
+    const info = await transporter.sendMail(mailOptions);
+    console.log("Abandoned cart email sent:", info.messageId);
+    return {
+      success: true,
+      messageId: info.messageId,
+    };
+  } catch (error) {
+    console.error("Error sending abandoned cart email:", error);
+    throw new Error("Failed to send abandoned cart email");
+  }
+};
+
+// Send chat offline notification email
+const sendChatNotificationEmail = async (
+  email: string,
+  userName: string,
+  senderName: string,
+  messagePreview: string,
+  chatLink: string,
+): Promise<EmailResult> => {
+  const transporter = createTransporter();
+
+  const htmlContent = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>New Message from ${senderName} - Entry Ecommerce</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f5f7fa; line-height: 1.6;">
+  
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f5f7fa; padding: 40px 20px;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);">
+          <tr>
+            <td style="background: linear-gradient(135deg, #0ea5e9 0%, #0369a1 100%); padding: 40px 30px; text-align: center;">
+              <div style="background-color: white; display: inline-block; padding: 15px 25px; border-radius: 8px; margin-bottom: 20px;">
+                <h1 style="margin: 0; color: #0369a1; font-size: 28px; font-weight: 700;">Entry Ecommerce</h1>
+              </div>
+              <h2 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: 600;">💬 New Message Received</h2>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 40px 30px;">
+              <h3 style="margin: 0 0 15px 0; color: #1a1a1a; font-size: 20px; font-weight: 600;">Hi ${userName}! 👋</h3>
+              <p style="margin: 0 0 20px 0; color: #666; font-size: 15px; line-height: 1.6;">
+                You have received a new message from <strong>${senderName}</strong> while you were offline.
+              </p>
+              
+              <div style="background-color: #f8fafc; border-left: 4px solid #0ea5e9; padding: 15px; border-radius: 0 8px 8px 0; margin-bottom: 30px;">
+                <p style="margin: 0; color: #334155; font-style: italic; font-size: 15px;">
+                  "${messagePreview}"
+                </p>
+              </div>
+
+              <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 30px;">
+                <tr>
+                  <td align="center">
+                    <a href="${chatLink}" style="display: inline-block; background: linear-gradient(135deg, #0ea5e9 0%, #0369a1 100%); color: #ffffff; text-decoration: none; padding: 16px 40px; border-radius: 8px; font-weight: 600; font-size: 16px;">
+                      Reply Now
+                    </a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td style="background-color: #f8f9fa; padding: 30px; text-align: center; border-top: 1px solid #e9ecef;">
+              <p style="margin: 0; color: #999; font-size: 12px;">
+                © ${new Date().getFullYear()} Entry Ecommerce. All rights reserved.
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+  `;
+
+  const mailOptions = {
+    from: `"Entry Ecommerce" <${process.env.SENDER_EMAIL_ADDRESS || "reactjsbd@gmail.com"}>`,
+    to: email,
+    subject: `New message from ${senderName} - Entry Ecommerce`,
+    html: htmlContent,
+  };
+
+  try {
+    const info = await transporter.sendMail(mailOptions);
+    console.log("Chat notification email sent:", info.messageId);
+    return {
+      success: true,
+      messageId: info.messageId,
+    };
+  } catch (error) {
+    console.error("Error sending chat notification email:", error);
+    throw new Error("Failed to send chat notification email");
+  }
+};
+
 export {
   sendInvoiceEmail,
   sendEmail,
   sendOrderConfirmationEmail,
   sendPasswordResetEmail,
   sendVerificationEmail,
+  sendAbandonedCartEmail,
+  sendChatNotificationEmail,
 };

@@ -28,10 +28,11 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col">
+      <body className="min-h-full flex flex-col" suppressHydrationWarning>
        <NextTopLoader
-          color="#2563eb"
+          color="#d52245"
           initialPosition={0.03}
           crawlSpeed={150}
           height={3}
@@ -39,7 +40,7 @@ export default function RootLayout({
           showSpinner={false}
           easing="ease-out"
           speed={180}
-          shadow="0 0 8px #2563eb, 0 0 3px #2563eb"
+          shadow="0 0 8px #d52245, 0 0 3px #d52245"
           zIndex={9999}
         />
         {children}

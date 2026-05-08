@@ -116,7 +116,6 @@ export default async function Home() {
     (pt) => pt.displayOrder === 3 || pt.displayOrder === 4,
   );
   const remaining = productTypes.filter((pt) => pt.displayOrder > 4);
-
   return (
     <div className="bg-primary-foreground">
       <JsonLd data={generateOrganizationSchema()} />

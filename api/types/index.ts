@@ -285,3 +285,73 @@ export interface ProcessEnv {
   SMTP_PASS: string;
   DEFAULT_USER_IMAGE: string;
 }
+// ============================================================================
+// Purchase Types
+// ============================================================================
+export type PurchaseStatus =
+  | "requisition"
+  | "approved"
+  | "purchased"
+  | "received"
+  | "cancelled";
+
+export interface IPurchaseItem {
+  productId: Types.ObjectId;
+  productName: string;
+  quantity: number;
+  purchasePrice: number;
+  profitMargin: number;
+  sellingPrice: number;
+  totalCost: number;
+}
+
+export interface IPurchase extends Document {
+  _id: Types.ObjectId;
+  purchaseNumber: string;
+  status: PurchaseStatus;
+  items: IPurchaseItem[];
+  totalAmount: number;
+  supplier: {
+    supplierId: Types.ObjectId;
+    name: string;
+    contact?: string;
+    email?: string;
+    address?: string;
+  };
+  notes?: string;
+  createdBy: {
+    id: Types.ObjectId;
+    name: string;
+  };
+  approvedBy?: {
+    id: Types.ObjectId;
+    name: string;
+    at: Date;
+    notes?: string;
+  };
+  purchasedBy?: {
+    id: Types.ObjectId;
+    name: string;
+    at: Date;
+    notes?: string;
+  };
+  receivedBy?: {
+    id: Types.ObjectId;
+    name: string;
+    at: Date;
+    notes?: string;
+  };
+  statusHistory: Array<{
+    status: PurchaseStatus;
+    changedAt: Date;
+    changedBy: {
+      id: Types.ObjectId;
+      name: string;
+    };
+    notes?: string;
+  }>;
+  expectedDeliveryDate?: Date;
+  actualDeliveryDate?: Date;
+  createdAt: Date;
+  updatedAt: Date;
+}
