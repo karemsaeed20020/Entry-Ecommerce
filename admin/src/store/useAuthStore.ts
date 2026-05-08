@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { api } from "../lib/api";
+import axios from "axios";
 import { canPerformCRUD, isReadOnlyUser } from "../lib/readOnlyConfig";
 
 type User = {
@@ -18,20 +19,23 @@ type AuthState = {
   token: string | null;
   refreshToken: string | null;
   isAuthenticated: boolean;
+  axiosPrivate: ReturnType<typeof axios.create>; // ← add this
   login: (credentials: { email: string; password: string }) => Promise<void>;
-  register: (userData: {
-    name: string;
-    email: string;
-    password: string;
-    role: string;
-  }) => Promise<void>;
+  register: (userData: { name: string; email: string; password: string; role: string }) => Promise<void>;
   setAuthData: (token: string, refreshToken: string, user: User) => void;
   setUser: (user: User) => void;
   logout: () => void;
   checkIsAdmin: () => boolean;
+  checkIsSeller: () => boolean;
   canPerformCRUD: () => boolean;
   isReadOnly: () => boolean;
 };
+
+// Create the private axios instance once, outside the store
+const axiosPrivateInstance = axios.create({
+  baseURL: import.meta.env.VITE_API_URL || "http://localhost:8000/api",
+  headers: { "Content-Type": "application/json" },
+});
 
 const useAuthStore = create<AuthState>()(
   persist(
@@ -40,51 +44,30 @@ const useAuthStore = create<AuthState>()(
       token: null,
       refreshToken: null,
       isAuthenticated: false,
+      axiosPrivate: axiosPrivateInstance, // ← expose it
 
       login: async (credentials) => {
         try {
           const response = await api.post("/auth/login", credentials);
-          
-          // Debug: Log the entire response to see its structure
-          console.log("Full response:", response);
-          console.log("Response data:", response.data);
-          
-          // Option 1: If user is directly in response.data
+
           let user = response.data.user || response.data;
           let accessToken = response.data.accessToken || response.data.token;
           let refreshToken = response.data.refreshToken || response.data.refresh_token;
-          
-          // Option 2: If response is nested (e.g., response.data.data)
+
           if (response.data.data) {
             user = response.data.data.user || response.data.data;
             accessToken = response.data.data.accessToken || response.data.data.token;
             refreshToken = response.data.data.refreshToken || response.data.data.refresh_token;
           }
-          
-          console.log("Extracted user:", user);
-          console.log("Extracted accessToken:", accessToken);
-          console.log("Extracted refreshToken:", refreshToken);
-          
-          // Check if user exists before accessing role
-          if (!user) {
-            console.error("No user object found in response");
-            throw new Error("Invalid response structure: user not found");
-          }
-          
-          // Check if user is admin
-          if (user.role !== "admin") {
-            console.error("Access denied: User is not an admin. Role:", user.role);
-            throw new Error("Access denied. Admin privileges required.");
-          }
-          
+
+          if (!user) throw new Error("Invalid response structure: user not found");
+          if (user.role !== "admin" && user.role !== "seller" && user.role !== "employee") throw new Error("Access denied. Admin or Seller privileges required.");
+
           if (accessToken && user) {
-            set({
-              user: user,
-              token: accessToken,
-              refreshToken: refreshToken,
-              isAuthenticated: true,
-            });
-            console.log("Login successful for admin user:", user.name);
+            // ← inject token into axiosPrivate on login
+            axiosPrivateInstance.defaults.headers.common["Authorization"] = `Bearer ${accessToken}`;
+
+            set({ user, token: accessToken, refreshToken, isAuthenticated: true });
           } else {
             throw new Error("Missing accessToken or user data");
           }
@@ -104,52 +87,34 @@ const useAuthStore = create<AuthState>()(
       },
 
       setAuthData: (token: string, refreshToken: string, user: User) => {
-        if (user.role !== "admin") {
-          throw new Error("Access denied. Admin privileges required.");
-        }
-        
-        set({
-          user,
-          token,
-          refreshToken,
-          isAuthenticated: true,
-        });
+        if (user.role !== "admin" && user.role !== "seller" && user.role !== "employee") throw new Error("Access denied. Admin or Seller privileges required.");
+        axiosPrivateInstance.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+        set({ user, token, refreshToken, isAuthenticated: true });
       },
 
-      setUser: (user: User) => {
-        set({ user });
-      },
+      setUser: (user: User) => set({ user }),
 
       logout: () => {
-        set({
-          user: null,
-          token: null,
-          refreshToken: null,
-          isAuthenticated: false,
-        });
-           // Clear persisted storage
+        // ← clear token from axiosPrivate on logout
+        delete axiosPrivateInstance.defaults.headers.common["Authorization"];
+        set({ user: null, token: null, refreshToken: null, isAuthenticated: false });
         localStorage.removeItem("auth-storage");
-        
-        // Clear any other stored data
         sessionStorage.clear();
       },
 
-      checkIsAdmin: () => {
-        const { user } = get();
-        return user?.role === "admin";
-      },
-       canPerformCRUD: () => {
-        const { user } = get();
-        return canPerformCRUD(user?.email, user?.role);
-      },
-
-      isReadOnly: () => {
-        const { user } = get();
-        return isReadOnlyUser(user?.email);
-      },
+      checkIsAdmin: () => get().user?.role === "admin",
+      checkIsSeller: () => get().user?.role === "seller",
+      canPerformCRUD: () => canPerformCRUD(get().user?.email, get().user?.role),
+      isReadOnly: () => isReadOnlyUser(get().user?.email),
     }),
     {
       name: "auth-storage",
+      // ← re-hydrate the token into axiosPrivate after page refresh
+      onRehydrateStorage: () => (state) => {
+        if (state?.token) {
+          axiosPrivateInstance.defaults.headers.common["Authorization"] = `Bearer ${state.token}`;
+        }
+      },
     }
   )
 );
