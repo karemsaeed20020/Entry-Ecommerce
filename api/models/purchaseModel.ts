@@ -150,8 +150,8 @@ const purchaseSchema = new mongoose.Schema(
   }
 );
 
-// Auto-generate purchase number before saving
-purchaseSchema.pre("save", async function () {
+// Auto-generate purchase number before validation
+purchaseSchema.pre("validate", async function () {
   if (!this.purchaseNumber) {
     const count = await mongoose.model("Purchase").countDocuments();
     this.purchaseNumber = `PO-${String(count + 1).padStart(6, "0")}`;
@@ -159,9 +159,8 @@ purchaseSchema.pre("save", async function () {
 });
 
 // Calculate total amount before saving
-purchaseSchema.pre("save", function (next: any) {
+purchaseSchema.pre("save", async function () {
   this.totalAmount = this.items.reduce((sum, item) => sum + item.totalCost, 0);
-  next();
 });
 
 const Purchase = mongoose.model("Purchase", purchaseSchema);
