@@ -30,6 +30,14 @@ import InvoicesPage from './pages/dashboard/InvoicesPage';
 import InvoiceDetailPage from './pages/dashboard/InvoiceDetailPage';
 import ContactMessagesPage from './pages/dashboard/ContactMessagesPage';
 import AccountPage from './pages/dashboard/AccountPage';
+import PurchasesPage from './pages/dashboard/PurchasesPage';
+import PurchaseCreate from './pages/dashboard/PurchaseCreate';
+import PurchaseDetail from './pages/dashboard/PurchaseDetail';
+import SuppliersPage from './pages/dashboard/SuppliersPage';
+import SellersPage from './pages/dashboard/SellersPage';
+import SellerConfigPage from './pages/dashboard/SellerConfigPage';
+import SellerProductsPage from './pages/dashboard/SellerProductsPage';
+import MessagesPage from './pages/dashboard/MessagesPage';
 
 const App = () => {
   return (
@@ -65,7 +73,21 @@ const App = () => {
           <Route path="reviews" element={<ReviewsPage />} />
           <Route path="coupons" element={<CouponsPage />} />
           <Route path="notifications" element={<NotificationsPage />} />
+          <Route path="messages" element={<MessagesPage />} />
           <Route path="website-icons" element={<WebsiteIcons />} />
+          
+          {/* Purchase Management */}
+          <Route path="purchases" element={<PurchasesPage />} />
+          <Route path="purchases/create" element={<PurchaseCreate />} />
+          <Route path="purchases/approved" element={<PurchasesPage />} />
+          <Route path="purchases/purchased" element={<PurchasesPage />} />
+          <Route path="purchases/suppliers" element={<SuppliersPage />} />
+          <Route path="purchases/:id" element={<PurchaseDetail />} />
+
+          {/* Seller Management */}
+          <Route path="sellers" element={<SellersPage />} />
+          <Route path="seller-products" element={<SellerProductsPage />} />
+          <Route path="seller-config" element={<SellerConfigPage />} />
       </Route>
          {/* Default Routes */}
           <Route path="/" element={<Navigate to="/dashboard" replace />} />

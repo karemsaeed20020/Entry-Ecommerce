@@ -73,10 +73,27 @@ interface SearchProductsQuery {
 // @route   GET /api/orders
 // @access  Private
 export const getOrders: RequestHandler = asyncHandler(async (req, res) => {
-  const orders = await Order.find({ userId: req.user._id }).populate(
-    "items.productId",
-  );
-  res.json(orders);
+  const orders = await Order.find({ userId: req.user._id })
+    .populate("items.productId")
+    .sort("-createdAt");
+
+  // Get return requests for these orders
+  const ReturnRequest = (await import("../models/returnRequestModel.js")).default;
+  const returnRequests = await ReturnRequest.find({ customerId: req.user._id });
+
+  // Map return requests to orders
+  const ordersWithReturns = orders.map((order) => {
+    const orderObj = order.toObject();
+    const returnRequest = returnRequests.find(
+      (r) => r.orderId.toString() === order._id.toString()
+    );
+    return {
+      ...orderObj,
+      returnRequest: returnRequest || null,
+    };
+  });
+
+  res.json(ordersWithReturns);
 });
 
 // @desc    Get order by ID
@@ -221,6 +238,18 @@ export const createCODOrder: RequestHandler = asyncHandler(
       await notificationService.notifyOrderPlaced(req.user._id, order);
     } catch (notifError) {
       console.error("❌ Failed to create notification:", notifError);
+    }
+
+    // Deduct stock for COD order immediately
+    try {
+      const Product = (await import("../models/productModel.js")).default;
+      for (const item of validItems) {
+        await Product.findByIdAndUpdate(item.productId, {
+          $inc: { stock: -item.quantity, sold: item.quantity },
+        });
+      }
+    } catch (stockError) {
+      console.error("❌ Failed to deduct stock for COD order:", stockError);
     }
 
     // Send order confirmation email
@@ -748,6 +777,17 @@ export const updateOrderPaymentStatus: RequestHandler = asyncHandler(
         runValidators: false,
       },
     ).populate("userId", "name email");
+
+    // Deduct stock after successful payment and set to confirmed
+    if (status === "paid" && updatedOrder && updatedOrder.status !== "confirmed") {
+      const Product = (await import("../models/productModel.js")).default;
+      for (const item of updatedOrder.items) {
+        await Product.findByIdAndUpdate(item.productId, {
+          $inc: { stock: -item.quantity, sold: item.quantity },
+        });
+      }
+      await Order.findByIdAndUpdate(updatedOrder._id, { status: "confirmed" });
+    }
 
     // Create in-app notification for payment success
     if (updatedOrder && updatedOrder.paymentStatus === "paid") {
