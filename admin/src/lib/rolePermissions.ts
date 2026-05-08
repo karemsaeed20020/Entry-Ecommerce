@@ -125,6 +125,10 @@ const menuPermissions: MenuItem[] = [
     allowedRoles: ["admin"],
   },
   {
+    path: "/dashboard/purchases",
+    allowedRoles: ["admin"],
+  },
+  {
     path: "/dashboard/purchases/create",
     allowedRoles: ["admin"],
   },

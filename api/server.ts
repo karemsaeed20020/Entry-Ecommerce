@@ -6,9 +6,12 @@ import express, {
 import dotenv from "dotenv";
 import cors from "cors";
 import swaggerUi from "swagger-ui-express";
+import { Server } from "socket.io";
+import { createServer } from "http";
 import connectDB from "./config/db.js";
 import { errorHandler } from "./middleware/errorMiddleware.js";
 import { specs } from "./config/swagger.js";
+import { setupCronJobs } from "./utils/cronJobs.js";
 
 // Routes
 import userRoutes from "./routes/userRoutes.js";
@@ -40,6 +43,14 @@ import sellerRoutes from './routes/sellerRoutes.js';
 import contactRoutes from './routes/contactRoutes.js';
 import wishlistRoutes from './routes/wishlistRoutes.js';
 import cartRoutes from './routes/cartRoutes.js';
+import purchaseRoutes from './routes/purchaseRoutes.js';
+import supplierRoutes from './routes/supplierRoutes.js';
+import chatRoutes from './routes/chatRoutes.js';
+import returnRoutes from './routes/returnRoutes.js';
+import Message from "./models/messageModel.js";
+import Conversation from "./models/conversationModel.js";
+import Notification from "./models/notificationModel.js";
+import User from "./models/userModel.js";
 // Load env vars
 dotenv.config();
 
@@ -136,6 +147,10 @@ app.use("/api/roles", roleRoutes);
 app.use("/api/permissions", permissionRoutes);
 app.use("/api/contact", contactRoutes);
 app.use("/api/wishlist", wishlistRoutes);
+app.use("/api/purchases", purchaseRoutes);
+app.use("/api/suppliers", supplierRoutes);
+app.use("/api/chat", chatRoutes);
+app.use("/api/returns", returnRoutes);
 
 // API Documentation
 app.use(
@@ -208,8 +223,109 @@ app.get("/api/docs/info", (req: Request, res: Response) => {
 // Error handler
 app.use(errorHandler);
 
+// Create HTTP server for Socket.io
+const httpServer = createServer(app);
+
+// Initialize Socket.io
+const io = new Server(httpServer, {
+  cors: {
+    origin: allowedOrigins as string[],
+    methods: ["GET", "POST"],
+    credentials: true,
+  },
+});
+
+// Socket.io Connection Logic
+io.on("connection", (socket) => {
+  console.log("A user connected:", socket.id);
+
+  socket.on("join_room", (room) => {
+    socket.join(room);
+    console.log(`User ${socket.id} joined room: ${room}`);
+  });
+
+  socket.on("send_message", async (data) => {
+    const { conversationId, senderId, text } = data;
+    
+    try {
+      // Save message to database
+      const message = await Message.create({
+        conversationId,
+        sender: senderId,
+        text,
+      });
+
+      // Update last message in conversation
+      await Conversation.findByIdAndUpdate(conversationId, {
+        lastMessage: message._id,
+      });
+
+      // Emit message to the room
+      io.to(conversationId).emit("receive_message", message);
+      console.log(`Message sent in room ${conversationId}`);
+
+      // Create notification for the recipient
+      const conversation = await Conversation.findById(conversationId);
+      if (conversation) {
+        const recipientId = conversation.participants.find(p => p.toString() !== senderId.toString());
+        const sender = await User.findById(senderId);
+        
+        if (recipientId && sender) {
+          const recipient = await User.findById(recipientId);
+          const isSeller = recipient?.role === "seller";
+          
+          const notification = await Notification.create({
+            userId: recipientId,
+            senderId: senderId,
+            type: "chat",
+            title: `New message from ${sender.name}`,
+            message: text.length > 50 ? text.substring(0, 47) + "..." : text,
+            actionUrl: isSeller ? "/seller/messages" : "/user/messages",
+            priority: "normal"
+          });
+
+          // Emit real-time notification to the recipient's private room
+          const room = io.sockets.adapter.rooms.get(recipientId.toString());
+          const isRecipientOnline = room && room.size > 0;
+
+          io.to(recipientId.toString()).emit("new_notification", notification);
+
+          // Send an email if the user is completely offline
+          if (!isRecipientOnline && recipient.email) {
+            try {
+              const { sendChatNotificationEmail } = await import("./utils/emailService.js");
+              const clientUrl = process.env.CLIENT_URL || "http://localhost:3000";
+              const chatLink = isSeller ? `${process.env.ADMIN_URL || "http://localhost:5173"}/seller/messages` : `${clientUrl}/messages`;
+              
+              await sendChatNotificationEmail(
+                recipient.email,
+                recipient.name || "User",
+                sender.name || "Someone",
+                text.length > 50 ? text.substring(0, 47) + "..." : text,
+                chatLink
+              );
+            } catch (emailErr) {
+              console.error("Failed to send chat email:", emailErr);
+            }
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Error saving message:", error);
+    }
+  });
+
+  socket.on("disconnect", () => {
+    console.log("User disconnected");
+  });
+});
+
 // Start server
 const PORT = process.env.PORT || 8000;
-app.listen(PORT, () => {
+
+// Initialize Cron Jobs
+setupCronJobs();
+
+httpServer.listen(PORT, () => {
   console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
 });

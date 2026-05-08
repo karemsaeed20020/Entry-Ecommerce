@@ -8,6 +8,11 @@ const productSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
+    barcode: {
+      type: String,
+      unique: true,
+      sparse: true, // Allows null/empty while maintaining uniqueness
+    },
     slug: {
       type: String,
       unique: true,
@@ -229,19 +234,16 @@ productSchema.pre("save", async function () {
   }
 });
 
-// Calculate average rating and review count before saving
+// Legacy reviews pre-save hook removed as it conflicted with the new standalone Review model.
+
+// Generate barcode if it doesn't exist
 productSchema.pre("save", async function () {
-  // Calculate from approved reviews
-  const approvedReviews = (this.reviews as any).filter(
-    (review: any) => review.isApproved,
-  );
-  if (approvedReviews.length > 0) {
-    const sum = approvedReviews.reduce((acc, item) => acc + item.rating, 0);
-    this.averageRating = sum / approvedReviews.length;
-    this.numReviews = approvedReviews.length;
-  } else {
-    this.averageRating = 0;
-    this.numReviews = 0;
+  if (!this.barcode) {
+    // Generate a simple numeric barcode (e.g., 13 digits like EAN-13)
+    // Here we use timestamp + random to ensure uniqueness for now
+    const timestamp = Date.now().toString().slice(-8);
+    const random = Math.floor(Math.random() * 100000).toString().padStart(5, '0');
+    this.barcode = `${timestamp}${random}`;
   }
 });
 

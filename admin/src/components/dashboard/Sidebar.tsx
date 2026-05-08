@@ -722,6 +722,20 @@ function renderNavItems(
           {expandedGroups.purchase && (
             <>
               {canAccessMenuItem(
+                "/dashboard/purchases",
+                user?.role || "",
+                user?.employee_role,
+              ) && (
+                <NavItem
+                  to="/dashboard/purchases"
+                  icon={<Package size={20} />}
+                  label="All Purchases"
+                  open={open}
+                  isSubItem
+                  end={true}
+                />
+              )}
+              {canAccessMenuItem(
                 "/dashboard/purchases/create",
                 user?.role || "",
                 user?.employee_role,
@@ -888,6 +902,19 @@ function renderNavItems(
                   to="/dashboard/contact"
                   icon={<Mail size={20} />}
                   label="Contact Msgs."
+                  open={open}
+                  isSubItem
+                />
+              )}
+              {canAccessMenuItem(
+                "/dashboard/messages",
+                user?.role || "",
+                user?.employee_role,
+              ) && (
+                <NavItem
+                  to="/dashboard/messages"
+                  icon={<Mail size={20} />}
+                  label="Chat Messages"
                   open={open}
                   isSubItem
                 />

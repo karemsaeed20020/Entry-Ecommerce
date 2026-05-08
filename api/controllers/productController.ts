@@ -202,6 +202,13 @@ const getProductById: RequestHandler = asyncHandler(async (req, res) => {
     product = await Product.findById(productId)
       .populate("category", "name")
       .populate("brand", "name")
+      .populate({
+        path: "seller",
+        populate: {
+          path: "userId",
+          select: "name email avatar",
+        },
+      })
       .populate("productType", "name type color displayOrder");
   }
 
@@ -210,6 +217,13 @@ const getProductById: RequestHandler = asyncHandler(async (req, res) => {
     product = await Product.findOne({ slug: productId })
       .populate("category", "name")
       .populate("brand", "name")
+      .populate({
+        path: "seller",
+        populate: {
+          path: "userId",
+          select: "name email avatar",
+        },
+      })
       .populate("productType", "name type color displayOrder");
   }
 

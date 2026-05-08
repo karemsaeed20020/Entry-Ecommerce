@@ -334,6 +334,18 @@ export const handleSSLCommerzSuccess: RequestHandler = asyncHandler(
           { new: true },
         );
 
+        // Deduct stock after successful payment
+        if (updatedOrder && updatedOrder.status !== "confirmed") {
+          const Product = (await import("../models/productModel.js")).default;
+          for (const item of updatedOrder.items) {
+            await Product.findByIdAndUpdate(item.productId, {
+              $inc: { stock: -item.quantity, sold: item.quantity },
+            });
+          }
+          // Optionally, auto-confirm order upon payment
+          await Order.findByIdAndUpdate(orderId, { status: "confirmed" });
+        }
+
         if (updatedOrder) {
           res.redirect(
             `${process.env.CLIENT_URL}/success?orderId=${orderId}&payment=success`,
