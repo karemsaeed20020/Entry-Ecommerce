@@ -5,7 +5,7 @@ import { fetchData } from "@/lib/api";
 import { Category } from "@/lib/types";
 import Footer from "@/components/common/footer/Footer";
 import CompareDrawer from "@/components/common/CompareDrawer";
-
+import AIChatBubble from "@/components/common/AIChatBubble";
 // Server-side function to fetch logo with proper error handling
 async function fetchLogo(): Promise<string | null> {
   try {
@@ -170,6 +170,7 @@ export default async function RootLayout({
       <div className="bg-muted min-h-screen pb-20">{children}</div>
       {/* <CompareDrawer /> */}
       <Footer />
+      <AIChatBubble />
     </>
   );
 }

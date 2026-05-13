@@ -175,7 +175,8 @@ const getProducts: RequestHandler = asyncHandler(
         .populate("productType", "name type color displayOrder")
         .skip(skip)
         .limit(limitNumber)
-        .sort({ createdAt: sortValue }),
+        .sort({ createdAt: sortValue })
+        .lean(), // Returns plain JS objects to reduce memory overhead and speed up serialization
       Product.countDocuments(query),
     ]);
 

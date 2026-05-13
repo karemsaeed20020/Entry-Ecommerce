@@ -27,26 +27,27 @@ import bannerRoutes from "./routes/bannerRoutes.js";
 import adsBannerRoutes from "./routes/adsBannerRoutes.js";
 import productBannerRoutes from "./routes/productBannerRoutes.js";
 import uploadRoutes from "./routes/uploadRoutes.js";
-import addressRoutes from './routes/addressRoutes.js';
-import baseConfigRoutes from './routes/baseConfigRoutes.js';
-import componentTypeRoutes from './routes/componentTypeRoutes.js';
-import statsRoutes from './routes/statsRoutes.js';
-import searchRoutes from './routes/searchRoutes.js';
-import roleRoutes from './routes/roleRoutes.js';
-import permissionRoutes from './routes/permissionRoutes.js';
-import userRoleRoutes from './routes/userRoleRoutes.js';
-import orderRoutes from './routes/orderRoutes.js';
-import orderWorkflowRoutes from './routes/orderWorkflowRoutes.js';
-import cashCollectionRoutes from './routes/cashCollectionRoutes.js';
-import websiteIconRoutes from './routes/websiteIconRoutes.js';
-import sellerRoutes from './routes/sellerRoutes.js';
-import contactRoutes from './routes/contactRoutes.js';
-import wishlistRoutes from './routes/wishlistRoutes.js';
-import cartRoutes from './routes/cartRoutes.js';
-import purchaseRoutes from './routes/purchaseRoutes.js';
-import supplierRoutes from './routes/supplierRoutes.js';
-import chatRoutes from './routes/chatRoutes.js';
-import returnRoutes from './routes/returnRoutes.js';
+import addressRoutes from "./routes/addressRoutes.js";
+import baseConfigRoutes from "./routes/baseConfigRoutes.js";
+import componentTypeRoutes from "./routes/componentTypeRoutes.js";
+import statsRoutes from "./routes/statsRoutes.js";
+import searchRoutes from "./routes/searchRoutes.js";
+import roleRoutes from "./routes/roleRoutes.js";
+import permissionRoutes from "./routes/permissionRoutes.js";
+import userRoleRoutes from "./routes/userRoleRoutes.js";
+import orderRoutes from "./routes/orderRoutes.js";
+import orderWorkflowRoutes from "./routes/orderWorkflowRoutes.js";
+import cashCollectionRoutes from "./routes/cashCollectionRoutes.js";
+import websiteIconRoutes from "./routes/websiteIconRoutes.js";
+import sellerRoutes from "./routes/sellerRoutes.js";
+import contactRoutes from "./routes/contactRoutes.js";
+import wishlistRoutes from "./routes/wishlistRoutes.js";
+import cartRoutes from "./routes/cartRoutes.js";
+import purchaseRoutes from "./routes/purchaseRoutes.js";
+import supplierRoutes from "./routes/supplierRoutes.js";
+import chatRoutes from "./routes/chatRoutes.js";
+import returnRoutes from "./routes/returnRoutes.js";
+import aiRoutes from "./routes/aiRoutes.js";
 import Message from "./models/messageModel.js";
 import Conversation from "./models/conversationModel.js";
 import Notification from "./models/notificationModel.js";
@@ -151,6 +152,7 @@ app.use("/api/purchases", purchaseRoutes);
 app.use("/api/suppliers", supplierRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/returns", returnRoutes);
+app.use("/api/ai", aiRoutes);
 
 // API Documentation
 app.use(
@@ -246,7 +248,7 @@ io.on("connection", (socket) => {
 
   socket.on("send_message", async (data) => {
     const { conversationId, senderId, text } = data;
-    
+
     try {
       // Save message to database
       const message = await Message.create({
@@ -267,13 +269,15 @@ io.on("connection", (socket) => {
       // Create notification for the recipient
       const conversation = await Conversation.findById(conversationId);
       if (conversation) {
-        const recipientId = conversation.participants.find(p => p.toString() !== senderId.toString());
+        const recipientId = conversation.participants.find(
+          (p) => p.toString() !== senderId.toString(),
+        );
         const sender = await User.findById(senderId);
-        
+
         if (recipientId && sender) {
           const recipient = await User.findById(recipientId);
           const isSeller = recipient?.role === "seller";
-          
+
           const notification = await Notification.create({
             userId: recipientId,
             senderId: senderId,
@@ -281,7 +285,7 @@ io.on("connection", (socket) => {
             title: `New message from ${sender.name}`,
             message: text.length > 50 ? text.substring(0, 47) + "..." : text,
             actionUrl: isSeller ? "/seller/messages" : "/user/messages",
-            priority: "normal"
+            priority: "normal",
           });
 
           // Emit real-time notification to the recipient's private room
@@ -293,16 +297,20 @@ io.on("connection", (socket) => {
           // Send an email if the user is completely offline
           if (!isRecipientOnline && recipient.email) {
             try {
-              const { sendChatNotificationEmail } = await import("./utils/emailService.js");
-              const clientUrl = process.env.CLIENT_URL || "http://localhost:3000";
-              const chatLink = isSeller ? `${process.env.ADMIN_URL || "http://localhost:5173"}/seller/messages` : `${clientUrl}/messages`;
-              
+              const { sendChatNotificationEmail } =
+                await import("./utils/emailService.js");
+              const clientUrl =
+                process.env.CLIENT_URL || "http://localhost:3000";
+              const chatLink = isSeller
+                ? `${process.env.ADMIN_URL || "http://localhost:5173"}/seller/messages`
+                : `${clientUrl}/messages`;
+
               await sendChatNotificationEmail(
                 recipient.email,
                 recipient.name || "User",
                 sender.name || "Someone",
                 text.length > 50 ? text.substring(0, 47) + "..." : text,
-                chatLink
+                chatLink,
               );
             } catch (emailErr) {
               console.error("Failed to send chat email:", emailErr);

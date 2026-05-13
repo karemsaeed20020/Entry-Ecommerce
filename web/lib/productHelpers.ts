@@ -1,4 +1,4 @@
-import { Product } from "@entry/types";
+import { Product } from "./types";
 
 /**
  * Generate a product URL using slug if available, otherwise fallback to ID

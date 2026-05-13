@@ -176,7 +176,7 @@ export const deleteReview = async (req: Request, res: Response) => {
     if (!userId) {
       return res.status(401).json({ success: false, message: "Not authenticated" });
     }
-    if (!mongoose.Types.ObjectId.isValid(reviewId)) {
+    if (!mongoose.Types.ObjectId.isValid(reviewId as string)) {
       return res.status(400).json({ success: false, message: "Invalid review ID" });
     }
 
@@ -208,7 +208,7 @@ export const toggleHelpful = async (req: Request, res: Response) => {
     if (!userId) {
       return res.status(401).json({ success: false, message: "Not authenticated" });
     }
-    if (!mongoose.Types.ObjectId.isValid(reviewId)) {
+    if (!mongoose.Types.ObjectId.isValid(reviewId as string)) {
       return res.status(400).json({ success: false, message: "Invalid review ID" });
     }
 
@@ -302,7 +302,7 @@ export const updateReviewStatus = async (req: Request, res: Response) => {
     const { reviewId } = req.params;
     const { isApproved } = req.body;
 
-    if (!mongoose.Types.ObjectId.isValid(reviewId)) {
+    if (!mongoose.Types.ObjectId.isValid(reviewId as string)) {
       return res.status(400).json({ success: false, message: "Invalid review ID" });
     }
 

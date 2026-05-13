@@ -1,7 +1,12 @@
 import React, { useEffect, useState, useRef } from "react";
 import useAuthStore from "../../store/useAuthStore";
 import { io, Socket } from "socket.io-client";
-import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../../components/ui/card";
 import { Input } from "../../components/ui/input";
 import { Button } from "../../components/ui/button";
 import { Send, User as UserIcon } from "lucide-react";
@@ -23,7 +28,8 @@ interface Message {
 const MessagesPage = () => {
   const { user } = useAuthStore();
   const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null);
+  const [selectedConversation, setSelectedConversation] =
+    useState<Conversation | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const socketRef = useRef<Socket | null>(null);
@@ -31,7 +37,9 @@ const MessagesPage = () => {
 
   useEffect(() => {
     // Initialize socket
-    socketRef.current = io(import.meta.env.VITE_API_URL || "http://localhost:8000");
+    socketRef.current = io(
+      import.meta.env.VITE_API_URL || "http://localhost:8000",
+    );
 
     fetchConversations();
 
@@ -87,7 +95,8 @@ const MessagesPage = () => {
 
   const sendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newMessage.trim() || !selectedConversation || !socketRef.current) return;
+    if (!newMessage.trim() || !selectedConversation || !socketRef.current)
+      return;
 
     const messageData = {
       conversationId: selectedConversation._id,
@@ -118,14 +127,18 @@ const MessagesPage = () => {
                 key={conv._id}
                 onClick={() => setSelectedConversation(conv)}
                 className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors ${
-                  selectedConversation?._id === conv._id ? "bg-primary/10" : "hover:bg-muted"
+                  selectedConversation?._id === conv._id
+                    ? "bg-primary/10"
+                    : "hover:bg-muted"
                 }`}
               >
                 <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
                   <UserIcon size={20} className="text-muted-foreground" />
                 </div>
                 <div className="flex-1 overflow-hidden">
-                  <h4 className="font-semibold text-sm truncate">{other?.name || "Unknown User"}</h4>
+                  <h4 className="font-semibold text-sm truncate">
+                    {other?.name || "Unknown User"}
+                  </h4>
                   <p className="text-xs text-muted-foreground truncate">
                     {conv.lastMessage?.text || "No messages yet"}
                   </p>
@@ -134,7 +147,9 @@ const MessagesPage = () => {
             );
           })}
           {conversations.length === 0 && (
-            <p className="text-center text-muted-foreground py-4">No conversations yet.</p>
+            <p className="text-center text-muted-foreground py-4">
+              No conversations yet.
+            </p>
           )}
         </CardContent>
       </Card>
@@ -155,7 +170,10 @@ const MessagesPage = () => {
               {messages.map((msg) => {
                 const isMe = msg.sender === user?._id;
                 return (
-                  <div key={msg._id} className={`flex ${isMe ? "justify-end" : "justify-start"}`}>
+                  <div
+                    key={msg._id}
+                    className={`flex ${isMe ? "justify-end" : "justify-start"}`}
+                  >
                     <div
                       className={`max-w-[70%] rounded-lg p-3 ${
                         isMe ? "bg-primary text-primary-foreground" : "bg-muted"

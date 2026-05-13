@@ -23,6 +23,7 @@ import ProductDetailsClient from "@/components/pages/product/ProductDetailsClien
 import ProductDescriptionClient from "@/components/pages/product/ProductDescriptionClient";
 import ProductReviews from "@/components/pages/product/ReviewForm";
 import BarcodeWrapper from "@/components/common/BarcodeWrapper";
+import AIReviewSummary from "@/components/common/AIReviewSummary";
 
 const ProductDetails = async ({
   params,
@@ -230,6 +231,9 @@ const ProductDetails = async ({
             </div>
           </div>
         </div>
+
+        {/* ── AI Review Summary ── */}
+        <AIReviewSummary productId={product._id} />
 
         {/* ── Description tabs ── */}
         <div className="bg-background shadow-lg shadow-foreground/5 border border-muted-foreground/20 rounded-2xl p-6 md:p-10 mt-6">

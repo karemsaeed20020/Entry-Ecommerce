@@ -171,8 +171,16 @@ const productSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  },
+  }
 );
+
+// Performance Indexes for high-speed filtering and sorting
+productSchema.index({ category: 1, approvalStatus: 1 });
+productSchema.index({ brand: 1, approvalStatus: 1 });
+productSchema.index({ price: 1 });
+productSchema.index({ averageRating: -1 });
+productSchema.index({ createdAt: -1 });
+productSchema.index({ name: "text", description: "text" }); // Enables high-speed text search
 
 // Generate slug from product details before save
 productSchema.pre("save", async function () {

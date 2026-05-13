@@ -77,12 +77,16 @@ const seed = async () => {
 
     let brand = await Brand.findOne({ name: "Global" });
     if (!brand) {
-      brand = await Brand.create({ name: "Global", description: "Global brands", isActive: true });
+      brand = await Brand.create({ name: "Global", image: "" });
     }
 
     let productType = await ProductType.findOne({ name: "Standard" });
     if (!productType) {
-      productType = await ProductType.create({ name: "Standard", type: "standard", isActive: true });
+      productType = await ProductType.create({
+        name: "Standard",
+        type: "standard",
+        isActive: true,
+      } as any);
     }
 
     const dummyProducts = [];

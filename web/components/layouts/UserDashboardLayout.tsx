@@ -13,6 +13,7 @@ import {
   ChevronRight,
   LogOut,
   Store,
+  RotateCcw,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Container from "@/components/common/Container";
@@ -50,6 +51,11 @@ export default function UserDashboardLayout({
       href: "/user/analytics",
       label: "Analytics",
       icon: <BarChart3 className="w-4 h-4" />,
+    },
+    {
+      href: "/returns",
+      label: "Returns & Exchanges",
+      icon: <RotateCcw className="w-4 h-4" />,
     },
     {
       href: "/user/notifications",

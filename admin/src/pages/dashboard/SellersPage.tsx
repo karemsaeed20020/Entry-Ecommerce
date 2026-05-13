@@ -22,8 +22,8 @@ import {
 } from "lucide-react";
 import { useAxiosPrivate } from "../../hooks/useAxiosPrivate";
 import { useToast } from "../../hooks/use-toast";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Badge } from "../../components/ui/badge";
+import { Button } from "../../components/ui/button";
 import {
   Table,
   TableBody,
@@ -31,17 +31,16 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "../../components/ui/table";
 import {
   Sheet,
   SheetContent,
   SheetDescription,
   SheetHeader,
   SheetTitle,
-} from "@/components/ui/sheet";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator";
+} from "../../components/ui/sheet";
+import { Card, CardContent } from "../../components/ui/card";
+import { Input } from "../../components/ui/input";
 
 // Types
 interface SellerAddress {
@@ -122,8 +121,8 @@ export default function SellersPage() {
   }, [axiosPrivate, filter]);
 
   useEffect(() => {
-    if (axiosPrivate) fetchSellers();
-  }, [fetchSellers, axiosPrivate]);
+    fetchSellers();
+  }, [fetchSellers]);
 
   const handleStatusUpdate = async (
     sellerId: string,
@@ -250,7 +249,7 @@ export default function SellersPage() {
             <Input
               placeholder="Search by store name, email, or user..."
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
               className="pl-11 h-12 bg-slate-50 border-none rounded-xl focus-visible:ring-2 focus-visible:ring-indigo-500 transition-all font-medium"
             />
           </div>
@@ -355,7 +354,7 @@ export default function SellersPage() {
       </Card>
 
       {/* Seller Detail Sheet */}
-      <Sheet open={!!selectedSeller} onOpenChange={(open) => !open && setSelectedSeller(null)}>
+      <Sheet open={!!selectedSeller} onOpenChange={(open: boolean) => !open && setSelectedSeller(null)}>
         <SheetContent className="w-full sm:max-w-xl p-0 overflow-y-auto">
           {selectedSeller && (
             <div className="flex flex-col h-full">

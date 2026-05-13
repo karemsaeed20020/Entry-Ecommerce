@@ -195,6 +195,10 @@ const userSchema = new Schema<IUser>(
   }
 );
 
+// Performance Indexes for high-speed auth and role-based filtering
+userSchema.index({ role: 1 });
+userSchema.index({ employee_role: 1 });
+
 // Match user entered password to hashed password in database
 userSchema.methods.matchPassword = async function (
   enteredPassword: string

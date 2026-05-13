@@ -29,7 +29,7 @@ export interface CityOption {
 
 // Get all countries
 export const getAllCountries = (): CountryOption[] => {
-  return Country.getAllCountries().map((country) => ({
+  return Country.getAllCountries().map((country: any) => ({
     name: country.name,
     isoCode: country.isoCode,
     flag: country.flag,
@@ -42,7 +42,7 @@ export const getAllCountries = (): CountryOption[] => {
 
 // Get states by country code
 export const getStatesByCountry = (countryCode: string): StateOption[] => {
-  return State.getStatesOfCountry(countryCode).map((state) => ({
+  return State.getStatesOfCountry(countryCode).map((state: any) => ({
     name: state.name,
     isoCode: state.isoCode,
     countryCode: state.countryCode,
@@ -56,7 +56,7 @@ export const getCitiesByCountryAndState = (
   countryCode: string,
   stateCode: string
 ): CityOption[] => {
-  return City.getCitiesOfState(countryCode, stateCode).map((city) => ({
+  return City.getCitiesOfState(countryCode, stateCode).map((city: any) => ({
     name: city.name,
     countryCode: city.countryCode,
     stateCode: city.stateCode,
@@ -70,7 +70,7 @@ export const getCitiesByCountry = (countryCode: string): CityOption[] => {
   const cities = City.getCitiesOfCountry(countryCode);
   if (!cities) return [];
 
-  return cities.map((city) => ({
+  return cities.map((city: any) => ({
     name: city.name,
     countryCode: city.countryCode,
     stateCode: city.stateCode,

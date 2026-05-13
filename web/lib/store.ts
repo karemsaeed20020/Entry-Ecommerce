@@ -60,6 +60,7 @@ const mapCartItemToProduct = (
             _id: item.productId.category,
             name: "",
             image: "",
+            iconImage: "",
             categoryType: "",
           }
         : item.productId.category,
@@ -298,7 +299,7 @@ export const useUserStore = create<UserState>()(
 
           if (response.data) {
             set({
-              authUser: response.data,
+              authUser: response.data as User,
               isAuthenticated: true,
               auth_token: token,
             });

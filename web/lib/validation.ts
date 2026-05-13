@@ -21,9 +21,7 @@ export const userSchema = z.object({
     .string()
     .min(6, { message: "Password must be at least 6 characters" })
     .optional(),
-  role: z.enum(["admin", "user", "deliveryman"], {
-    errorMap: () => ({ message: "Please select a valid role" }),
-  }),
+  role: z.enum(["admin", "user", "deliveryman"]),
   avatar: z.string().optional(),
 });
 
@@ -31,9 +29,7 @@ export const categorySchema = z.object({
   name: z.string().min(1, "Name is required"),
   slug: z.string().optional(),
   image: z.string().optional(),
-  categoryType: z.enum(["Featured", "Hot Categories", "Top Categories"], {
-    required_error: "Category type is required",
-  }),
+  categoryType: z.enum(["Featured", "Hot Categories", "Top Categories"]),
 });
 
 export const brandSchema = z.object({

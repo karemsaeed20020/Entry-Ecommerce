@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
 import { useAxiosPrivate } from "../../hooks/useAxiosPrivate";
 import { useToast } from "../../hooks/use-toast";
 import { Button } from "../../components/ui/button";
@@ -14,9 +13,7 @@ import {
   TableRow,
 } from "../../components/ui/table";
 import {
-  Users,
   Search,
-  RefreshCw,
   Plus,
   Edit,
   Trash2,

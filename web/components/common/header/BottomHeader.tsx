@@ -106,8 +106,8 @@ const BottomHeader = ({ config, categories }: BottomHeaderProps) => {
             ))}
 
             {/* Premium Pages Dropdown */}
-            <div 
-              className="relative z-50 py-2" 
+            <div
+              className="relative z-50 py-2"
               ref={premiumRef}
               onMouseEnter={() => setIsPremiumOpen(true)}
               onMouseLeave={() => setIsPremiumOpen(false)}
@@ -115,24 +115,24 @@ const BottomHeader = ({ config, categories }: BottomHeaderProps) => {
               <button
                 className={cn(
                   "flex items-center gap-1 text-sm lg:text-base font-semibold text-primary-foreground/90 hover:text-accent hoverEffect",
-                  isPremiumOpen && "text-accent"
+                  isPremiumOpen && "text-accent",
                 )}
               >
                 Premium Pages
                 <ChevronDown
                   className={cn(
                     "w-4 h-4 transition-transform duration-200",
-                    isPremiumOpen && "rotate-180"
+                    isPremiumOpen && "rotate-180",
                   )}
                 />
               </button>
-              
+
               <div
                 className={cn(
                   "absolute top-[calc(100%-8px)] right-0 mt-2 w-56 rounded-xl border border-border bg-background shadow-2xl overflow-hidden transition-all duration-200 origin-top-right",
                   isPremiumOpen
                     ? "opacity-100 scale-100 translate-y-0"
-                    : "opacity-0 scale-95 -translate-y-2 pointer-events-none"
+                    : "opacity-0 scale-95 -translate-y-2 pointer-events-none",
                 )}
               >
                 <div className="p-2 space-y-1">

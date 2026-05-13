@@ -179,8 +179,8 @@ class NotificationService {
             isBulkSent: true,
             bulkSendId,
             targetAudience: finalTargetAudience,
-          })
-        )
+          }),
+        ),
       );
 
       return {
@@ -254,7 +254,7 @@ class NotificationService {
   // Create order placed notification
   async notifyOrderPlaced(
     userId: Types.ObjectId | string,
-    order: OrderInfo
+    order: OrderInfo,
   ): Promise<NotificationDocument> {
     return this.createNotification({
       userId,
@@ -273,7 +273,7 @@ class NotificationService {
   // Create order confirmed notification
   async notifyOrderConfirmed(
     userId: Types.ObjectId | string,
-    order: OrderInfo
+    order: OrderInfo,
   ): Promise<NotificationDocument> {
     return this.createNotification({
       userId,
@@ -291,7 +291,7 @@ class NotificationService {
   // Create order shipped notification
   async notifyOrderShipped(
     userId: Types.ObjectId | string,
-    order: OrderInfo
+    order: OrderInfo,
   ): Promise<NotificationDocument> {
     return this.createNotification({
       userId,
@@ -309,7 +309,7 @@ class NotificationService {
   // Create order delivered notification
   async notifyOrderDelivered(
     userId: Types.ObjectId | string,
-    order: OrderInfo
+    order: OrderInfo,
   ): Promise<NotificationDocument> {
     return this.createNotification({
       userId,
@@ -327,7 +327,7 @@ class NotificationService {
   // Create payment success notification
   async notifyPaymentSuccess(
     userId: Types.ObjectId | string,
-    order: OrderInfo
+    order: OrderInfo,
   ): Promise<NotificationDocument> {
     return this.createNotification({
       userId,
@@ -345,7 +345,7 @@ class NotificationService {
   // Get user notifications
   async getUserNotifications(
     userId: Types.ObjectId | string,
-    { limit = 20, skip = 0, unreadOnly = false }: GetNotificationsParams
+    { limit = 20, skip = 0, unreadOnly = false }: GetNotificationsParams,
   ): Promise<GetNotificationsResult> {
     const query: Record<string, unknown> = { userId };
     if (unreadOnly) {
@@ -373,12 +373,12 @@ class NotificationService {
   // Mark notification as read
   async markAsRead(
     notificationId: Types.ObjectId | string,
-    userId: Types.ObjectId | string
+    userId: Types.ObjectId | string,
   ): Promise<NotificationDocument | null> {
     const notification = await Notification.findOneAndUpdate(
       { _id: notificationId, userId },
       { isRead: true },
-      { new: true }
+      { new: true },
     );
 
     return notification;
@@ -386,11 +386,11 @@ class NotificationService {
 
   // Mark all notifications as read
   async markAllAsRead(
-    userId: Types.ObjectId | string
+    userId: Types.ObjectId | string,
   ): Promise<UpdateWriteOpResult> {
     const result = await Notification.updateMany(
       { userId, isRead: false },
-      { isRead: true }
+      { isRead: true },
     );
 
     return result;
@@ -399,7 +399,7 @@ class NotificationService {
   // Delete notification
   async deleteNotification(
     notificationId: Types.ObjectId | string,
-    userId: Types.ObjectId | string
+    userId: Types.ObjectId | string,
   ): Promise<{ deletedCount?: number }> {
     const result = await Notification.deleteOne({
       _id: notificationId,
@@ -410,7 +410,7 @@ class NotificationService {
 
   // Delete all notifications for a user
   async deleteAllNotifications(
-    userId: Types.ObjectId | string
+    userId: Types.ObjectId | string,
   ): Promise<{ deletedCount?: number }> {
     const result = await Notification.deleteMany({ userId });
     return result;
@@ -419,7 +419,7 @@ class NotificationService {
   // Notify Admins about new order
   async notifyAdminOrderPlaced(
     senderId: Types.ObjectId | string,
-    order: any
+    order: any,
   ): Promise<void> {
     const admins = await User.find({ role: "admin" });
     for (const admin of admins) {
@@ -437,7 +437,7 @@ class NotificationService {
   // Notify Admins about new review
   async notifyAdminReviewPosted(
     senderId: Types.ObjectId | string,
-    review: any
+    review: any,
   ): Promise<void> {
     const admins = await User.find({ role: "admin" });
     for (const admin of admins) {

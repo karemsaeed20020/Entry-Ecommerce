@@ -33,7 +33,7 @@ export interface CartResponse {
 
 export const getUserCart = async (
   page: number = 1,
-  limit: number = 10
+  limit: number = 10,
 ): Promise<CartResponse> => {
   try {
     const response = await authApi.get(`/cart?page=${page}&limit=${limit}`);
@@ -64,7 +64,7 @@ export const getUserCart = async (
 export const addToCart = async (
   token: string,
   productId: string,
-  quantity: number = 1
+  quantity: number = 1,
 ): Promise<CartResponse> => {
   try {
     const response = await authApi.post("/cart", { productId, quantity });
@@ -94,7 +94,7 @@ export const addToCart = async (
 export const updateCartItem = async (
   token: string,
   productId: string,
-  quantity: number
+  quantity: number,
 ): Promise<CartResponse> => {
   try {
     const response = await authApi.put("/cart/update", { productId, quantity });
@@ -123,7 +123,7 @@ export const updateCartItem = async (
 
 export const removeFromCart = async (
   token: string,
-  productId: string
+  productId: string,
 ): Promise<CartResponse> => {
   try {
     const response = await authApi.delete(`/cart/${productId}`);

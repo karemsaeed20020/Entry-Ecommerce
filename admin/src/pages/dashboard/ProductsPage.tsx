@@ -66,6 +66,8 @@ import {
   XCircle,
   Filter,
   Copy,
+  Printer,
+  Barcode as BarcodeIcon,
 } from "lucide-react";
 import { Checkbox } from "../../components/ui/checkbox";
 import { AxiosError } from "axios";
@@ -81,10 +83,12 @@ import { BulkUploadModal } from "../../components/products/BulkUploadModal";
 import { AboutItemsField } from "../../components/products/AboutItemsField";
 import { MultiSelect } from "../../components/ui/multi-select";
 import { NestedCategorySelector } from "../../components/products/NestedCategorySelector";
+import Barcode from "react-barcode";
 
 type Product = {
   _id: string;
   name: string;
+  barcode?: string;
   slug?: string;
   description: string;
   price: number;
@@ -171,6 +175,7 @@ export default function ProductsPage() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isBulkUploadModalOpen, setIsBulkUploadModalOpen] = useState(false);
+  const [isBarcodeModalOpen, setIsBarcodeModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
   const [deletingProductIds, setDeletingProductIds] = useState<string[]>([]);
@@ -1439,6 +1444,18 @@ export default function ProductsPage() {
                                 <Button
                                   variant="ghost"
                                   size="icon"
+                                  onClick={() => {
+                                    setSelectedProduct(product);
+                                    setIsBarcodeModalOpen(true);
+                                  }}
+                                  className="h-7 w-7 sm:h-8 sm:w-8 hover:bg-orange-50 hover:text-orange-600"
+                                  title="View Barcode"
+                                >
+                                  <BarcodeIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
                                   onClick={() => handleDelete(product)}
                                   className="h-7 w-7 sm:h-8 sm:w-8 hover:bg-red-50 hover:text-red-600"
                                   title="Delete product"
@@ -2278,6 +2295,43 @@ export default function ProductsPage() {
             fetchProducts(true); // Refresh products after bulk upload
           }}
         />
+
+        {/* Barcode Modal */}
+        <AlertDialog open={isBarcodeModalOpen} onOpenChange={setIsBarcodeModalOpen}>
+          <AlertDialogContent className="sm:max-w-md">
+            <AlertDialogHeader>
+              <AlertDialogTitle>Product Barcode</AlertDialogTitle>
+              <AlertDialogDescription>
+                Barcode for {selectedProduct?.name}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <div className="flex flex-col items-center justify-center p-6 bg-white rounded-lg border">
+              {(selectedProduct as any)?.barcode ? (
+                <div className="barcode-container p-4">
+                  <Barcode 
+                    value={(selectedProduct as any).barcode} 
+                    width={2} 
+                    height={80} 
+                    fontSize={14}
+                    background="#ffffff"
+                  />
+                </div>
+              ) : (
+                <div className="text-center py-4">
+                  <RefreshCw className="h-8 w-8 animate-spin mx-auto text-gray-400 mb-2" />
+                  <p className="text-sm text-gray-500">Barcode will be generated upon update/save.</p>
+                </div>
+              )}
+              <p className="mt-4 text-xs text-gray-400 font-mono">ID: {selectedProduct?._id}</p>
+            </div>
+            <AlertDialogFooter className="sm:justify-between">
+              <Button variant="outline" onClick={() => window.print()}>
+                <Printer className="h-4 w-4 mr-2" /> Print Barcode
+              </Button>
+              <AlertDialogCancel>Close</AlertDialogCancel>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </div>
   );

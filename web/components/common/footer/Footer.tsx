@@ -18,13 +18,15 @@ const informationTab = [
   { label: "Privacy Policy", href: "/privacy" },
   { label: "Terms & Conditions", href: "/terms" },
   { label: "Testimonials", href: "/testimonials" },
+  { label: "Returns & Exchanges", href: "/returns" },
 ];
 const CustomerTab = [
   { label: "My Account", href: "/account" },
   { label: "Track Order", href: "/track-order" },
   { label: "Shop", href: "/shop" },
   { label: "Wishlist", href: "/wishlist" },
-  { label: "Returns", href: "/returns" },
+  { label: "Returns & Exchanges", href: "/returns" },
+  { label: "My Analytics", href: "/user/analytics" },
 ];
 const OthersTab = [
   { label: "Partnership", href: "/programs" },

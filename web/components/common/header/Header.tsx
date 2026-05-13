@@ -77,21 +77,21 @@ const Header = ({
             <SearchInput config={baseConfig?.search} className="lg:flex-1" />
 
             <div className="hidden lg:flex items-center gap-5 shrink-0">
-               <CompareIcon />
-               <CartIcon />
-               <NotificationIcon />
-               <SellerBadge />
-               <UserButton />
+              <CompareIcon />
+              <CartIcon />
+              <NotificationIcon />
+              <SellerBadge />
+              <UserButton />
             </div>
           </div>
 
           {/* Mobile Actions: Search | Cart | User avatar */}
           <div className="lg:hidden flex items-center gap-3 shrink-0 ml-auto order-2">
-             <MobileSearchButton />
-             <CompareIcon />
-             <CartIcon />
-             <NotificationIcon />
-             <MobileUserIcon />
+            <MobileSearchButton />
+            <CompareIcon />
+            <CartIcon />
+            <NotificationIcon />
+            <MobileUserIcon />
           </div>
         </div>
       </Container>

@@ -32,7 +32,7 @@ export interface Vendor {
   updatedAt?: Date;
 }
 
- export interface Seller extends Vendor {}
+export interface Seller extends Vendor {}
 
 export interface Address {
   _id: string;

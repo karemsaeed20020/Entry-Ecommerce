@@ -45,7 +45,7 @@ const NotificationIcon = () => {
   useEffect(() => {
     if (hasMounted && auth_token && authUser) {
       fetchNotifications();
-      
+
       // Initialize socket for real-time notifications
       const socket = io(process.env.NEXT_PUBLIC_API_URL as string, {
         withCredentials: true,
@@ -55,9 +55,9 @@ const NotificationIcon = () => {
       socket.emit("join_room", authUser._id);
 
       socket.on("new_notification", (notification: Notification) => {
-        setNotifications(prev => [notification, ...prev].slice(0, 5));
-        setUnreadCount(prev => prev + 1);
-        
+        setNotifications((prev) => [notification, ...prev].slice(0, 5));
+        setUnreadCount((prev) => prev + 1);
+
         // Optional: Trigger a browser notification or sound
       });
 
@@ -90,7 +90,10 @@ const NotificationIcon = () => {
   return (
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
       <DropdownMenuTrigger asChild>
-        <button className="relative hover:text-accent hoverEffect p-1" aria-label="Notifications">
+        <button
+          className="relative hover:text-accent hoverEffect p-1"
+          aria-label="Notifications"
+        >
           <Bell size={24} />
           {unreadCount > 0 && (
             <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-[10px] bg-red-500 hover:bg-red-600 border-2 border-white rounded-full">
@@ -103,10 +106,10 @@ const NotificationIcon = () => {
         <DropdownMenuLabel className="p-4 flex items-center justify-between font-bold">
           Notifications
           {unreadCount > 0 && (
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="text-xs h-8 text-[#d52245] hover:text-[#b41d3a]" 
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-xs h-8 text-[#d52245] hover:text-[#b41d3a]"
               onClick={handleMarkAllAsRead}
             >
               Mark all as read
@@ -126,9 +129,13 @@ const NotificationIcon = () => {
               >
                 <Link href={notif.actionUrl || "#"} className="w-full">
                   <div className="flex justify-between items-start w-full">
-                    <span className="font-semibold text-sm line-clamp-1">{notif.title}</span>
+                    <span className="font-semibold text-sm line-clamp-1">
+                      {notif.title}
+                    </span>
                     <span className="text-[10px] text-muted-foreground shrink-0">
-                      {formatDistanceToNow(new Date(notif.createdAt), { addSuffix: true })}
+                      {formatDistanceToNow(new Date(notif.createdAt), {
+                        addSuffix: true,
+                      })}
                     </span>
                   </div>
                   <p className="text-xs text-muted-foreground line-clamp-2 mt-1">
@@ -144,7 +151,10 @@ const NotificationIcon = () => {
           )}
         </ScrollArea>
         <DropdownMenuSeparator />
-        <Link href="/user/notifications" className="block p-3 text-center text-xs font-medium text-[#d52245] hover:bg-accent hover:text-white transition-colors">
+        <Link
+          href="/user/notifications"
+          className="block p-3 text-center text-xs font-medium text-[#d52245] hover:bg-accent hover:text-white transition-colors"
+        >
           View all notifications
         </Link>
       </DropdownMenuContent>
